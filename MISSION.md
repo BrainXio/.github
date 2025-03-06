@@ -1,4 +1,4 @@
-# MISSION.md
+# MISSION
 
 ![avatar](https://avatars.githubusercontent.com/u/168876326?s=200&v=4)
 
