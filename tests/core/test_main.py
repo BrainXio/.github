@@ -1,10 +1,7 @@
 import logging
 import pytest
 import sys
-from pathlib import Path
 from src.brainxio.core.main import main, parse_args
-from src.brainxio.utils.cache import Cache
-from src.brainxio.utils.config import Config
 
 def test_main(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test main CLI entry point logs and outputs version."""
@@ -30,26 +27,15 @@ def test_parse_args_help(capsys: pytest.CaptureFixture) -> None:
     captured = capsys.readouterr()
     assert "BrainXio CLI for automation and AI tasks" in captured.out
 
-def test_config_show(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_config_show(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test config show command displays log_dir."""
-    config_file = tmp_path / "config.yaml"
-    cache_file = tmp_path / "cache.json"
-    cache = Cache(cache_file)
-    cache.set("config", {"log_dir": str(Path.home() / ".brainxio")})
-    cache.save()
-    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
-    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
     monkeypatch.setattr(sys, "argv", ["brainxio", "config", "show"])
     main()
     captured = capsys.readouterr()
     assert ".brainxio" in captured.out
 
-def test_config_set(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_config_set(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test config set command updates configuration."""
-    config_file = tmp_path / "config.yaml"
-    cache_file = tmp_path / "cache.json"
-    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
-    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
     monkeypatch.setattr(sys, "argv", ["brainxio", "config", "set", "log_dir", "/new/log"])
     main()
     captured = capsys.readouterr()

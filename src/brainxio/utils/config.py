@@ -39,8 +39,6 @@ class Config:
         self._config[key] = value
         self._cache.set("config", self._config)
         try:
-            if not os.access(self._config_file.parent, os.W_OK):
-                raise ConfigError(f"No write permission for {self._config_file.parent}")
             self._config_file.parent.mkdir(exist_ok=True)
             with self._config_file.open("w") as f:
                 yaml.safe_dump(self._config, f)
