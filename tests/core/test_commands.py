@@ -1,7 +1,7 @@
 import logging
 import pytest
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Any
 from src.brainxio.core.commands import CommandRegistry, ConfigCommand, ClearCacheCommand, ResetConfigCommand, Command
 from src.brainxio.utils.cache import Cache
 from src.brainxio.utils.config import Config
