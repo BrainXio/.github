@@ -17,6 +17,7 @@ Run the CLI: `python src/brainxio/core/main.py`
 - `config set <key> <value>`: Set a configuration key (e.g., `log_dir /new/log`).
 - `clear-cache`: Clear the cache file.
 - `reset-config`: Reset configuration to defaults.
+- `run-task <task_name>`: Run a Python task script from the task directory (default: `$HOME/.brainxio/tasks/`).
 
 ## Testing
 Run tests with coverage: `pytest --cov=src/brainxio`

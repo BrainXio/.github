@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Dict
 from ..utils.cache import Cache
 from ..utils.config import Config
+from ..utils.tasks import run_task
 from ..errors import BrainXioError
 
 logger = logging.getLogger(__name__)
@@ -48,6 +49,20 @@ class ResetConfigCommand(Command):
         self.config._cache.save()
         logger.info("Configuration reset to defaults")
         print("Configuration reset to defaults")
+
+class RunTaskCommand(Command):
+    """Runs a user-defined task script."""
+    def __init__(self, config: Config) -> None:
+        self.config = config
+
+    def execute(self, args: Dict[str, Any]) -> None:
+        task_name = args.get("task_name")
+        if not task_name:
+            raise BrainXioError("Task name required")
+        task_dir = Path(self.config.get("task_dir", Path.home() / ".brainxio" / "tasks"))
+        logger.info(f"Running task: {task_name}")
+        run_task(task_dir, task_name)
+        print(f"Task {task_name} executed successfully")
 
 class CommandRegistry:
     """Manages CLI command registration and execution."""

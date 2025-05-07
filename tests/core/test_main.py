@@ -76,3 +76,19 @@ def test_reset_config(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyP
     main()
     captured = capsys.readouterr()
     assert "Configuration reset to defaults" in captured.out
+
+def test_run_task(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test run-task command executes task."""
+    config_file = tmp_path / "config.yaml"
+    cache_file = tmp_path / "cache.json"
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("def run(): print('Task executed')")
+    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
+    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
+    monkeypatch.setattr(sys, "argv", ["brainxio", "run-task", "test_task"])
+    main()
+    captured = capsys.readouterr()
+    assert "Task executed" in captured.out
+    assert "Task test_task executed successfully" in captured.out
