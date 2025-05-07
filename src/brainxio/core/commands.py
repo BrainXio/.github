@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import logging
+import importlib.util
 from pathlib import Path
 from typing import Any, Dict
 from ..utils.cache import Cache
@@ -77,3 +78,24 @@ class CommandRegistry:
         if not command:
             raise BrainXioError(f"Unknown command: {name}")
         command.execute(args)
+
+    def load_plugins(self, plugin_dir: Path, config: Config, cache: Cache) -> None:
+        """Load plugins from the plugin directory."""
+        if not plugin_dir.exists():
+            return
+        for plugin_file in plugin_dir.glob("*.py"):
+            try:
+                spec = importlib.util.spec_from_file_location(plugin_file.stem, plugin_file)
+                if spec is None or spec.loader is None:
+                    logger.warning(f"Failed to load plugin: {plugin_file}")
+                    continue
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                if hasattr(module, "register_command"):
+                    command = module.register_command(config, cache)
+                    self.register(plugin_file.stem, command)
+                    logger.info(f"Loaded plugin: {plugin_file.stem}")
+                else:
+                    logger.warning(f"Plugin {plugin_file.stem} missing register_command function")
+            except Exception as e:
+                logger.error(f"Failed to load plugin {plugin_file.stem}: {e}")

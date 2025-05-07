@@ -84,6 +84,59 @@ def test_run_task_command_no_task_name(tmp_path: Path) -> None:
     with pytest.raises(BrainXioError, match="Task name required"):
         command.execute({})
 
+def test_plugin_loading_success(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test loading a valid plugin."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    plugin_dir = tmp_path / "plugins"
+    plugin_dir.mkdir()
+    plugin_file = plugin_dir / "test_plugin.py"
+    plugin_file.write_text("""
+from src.brainxio.core.commands import Command
+class TestPluginCommand(Command):
+    def execute(self, args):
+        print('Plugin executed')
+def register_command(config, cache):
+    return TestPluginCommand()
+""")
+    config.set("plugin_dir", str(plugin_dir))
+    registry = CommandRegistry()
+    registry.load_plugins(plugin_dir, config, cache)
+    registry.execute("test_plugin", {})
+    captured = capsys.readouterr()
+    assert "Plugin executed" in captured.out
+
+def test_plugin_loading_missing_register(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    """Test loading a plugin without register_command function."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    plugin_dir = tmp_path / "plugins"
+    plugin_dir.mkdir()
+    plugin_file = plugin_dir / "test_plugin.py"
+    plugin_file.write_text("def other(): pass")
+    config.set("plugin_dir", str(plugin_dir))
+    caplog.set_level(logging.WARNING)
+    registry = CommandRegistry()
+    registry.load_plugins(plugin_dir, config, cache)
+    assert "Plugin test_plugin missing register_command function" in caplog.text
+
+def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test loading a plugin with execution error."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    plugin_dir = tmp_path / "plugins"
+    plugin_dir.mkdir()
+    plugin_file = plugin_dir / "test_plugin.py"
+    plugin_file.write_text("raise ValueError('Plugin error')")
+    config.set("plugin_dir", str(plugin_dir))
+    caplog.set_level(logging.ERROR)
+    registry = CommandRegistry()
+    registry.load_plugins(plugin_dir, config, cache)
+    assert "Failed to load plugin test_plugin: Plugin error" in caplog.text
+
 def test_command_registry_execute(tmp_path: Path) -> None:
     """Test CommandRegistry executes registered commands."""
     config_file = tmp_path / "config.yaml"

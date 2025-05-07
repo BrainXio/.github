@@ -77,3 +77,11 @@ def test_config_invalid_key(tmp_path: Path) -> None:
     config = Config(config_file, cache)
     with pytest.raises(ConfigError, match="Invalid configuration key: invalid_key"):
         config.set("invalid_key", "value")
+
+def test_config_plugin_dir(tmp_path: Path) -> None:
+    """Test setting and retrieving plugin_dir."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    config.set("plugin_dir", "/custom/plugins")
+    assert config.get("plugin_dir") == "/custom/plugins"

@@ -7,7 +7,7 @@ from ..utils.cache import Cache
 
 class Config:
     """Manages configuration from YAML file and cache."""
-    ALLOWED_KEYS = {"log_dir", "cache_dir", "task_dir"}
+    ALLOWED_KEYS = {"log_dir", "cache_dir", "task_dir", "plugin_dir"}
 
     def __init__(self, config_file: Path, cache: Cache) -> None:
         self._config_file = config_file

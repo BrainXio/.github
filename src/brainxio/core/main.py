@@ -34,6 +34,8 @@ def main() -> None:
     registry.register("clear-cache", ClearCacheCommand(cache))
     registry.register("reset-config", ResetConfigCommand(config))
     registry.register("run-task", RunTaskCommand(config))
+    plugin_dir = Path(config.get("plugin_dir", Path.home() / ".brainxio" / "plugins"))
+    registry.load_plugins(plugin_dir, config, cache)
     logger.info("Starting BrainXio CLI", extra={"cache_hit": cache.get("last_command") is not None})
     args = parse_args()
     cache.set("last_command", vars(args))
