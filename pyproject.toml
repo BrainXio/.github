@@ -1,0 +1,17 @@
+[project]
+name = "brainxio"
+version = "0.1.0"
+description = "A modular Python CLI for automation and AI-driven tasks"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "The Unlicense"}
+
+[tool.black]
+line-length = 88
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/brainxio --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/brainxio"]
+omit = ["*/__init__.py"]
