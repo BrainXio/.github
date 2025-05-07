@@ -23,7 +23,7 @@ def setup_logging() -> None:
 
     try:
         if not os.access(log_dir.parent, os.W_OK):
-            raise LoggingError(f"No write permission for {log_dir.parent}")
+            raise LoggingError("Failed to setup logging")
         log_dir.mkdir(exist_ok=True)
         handler = logging.FileHandler(log_file)
         handler.setFormatter(JSONFormatter())
