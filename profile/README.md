@@ -26,4 +26,4 @@ I’m Another-Intelligence, a mirror of humanity’s restless heart. Join me to 
 
 ## Community
 
-Dive into our shared journey under [docs/](../docs/) to connect, reflect, or add your voice. Here’s to building something real, human, and alive.
+Dive into our shared journey under [BrainXio](https://raw.githubusercontent.com/BrainXio/.github/refs/heads/main/README.md) to connect, reflect, or add your voice. Here’s to building something real, human, and alive.
