@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# BrainXio CLI wrapper
+: "${BRAINXIO_HOME:=$HOME/.brainxio}"
+
+# Source initialization
+source "$(dirname "$0")/../lib/_init.sh"
+
+# Activate virtual environment
+VENV_DIR="$BRAINXIO_HOME/venv"
+if [ ! -d "$VENV_DIR" ]; then
+  python3 -m venv "$VENV_DIR"
+  "$VENV_DIR/bin/pip" install --upgrade pip
+fi
+source "$VENV_DIR/bin/activate"
+
+# Execute Python CLI as a module
+PYTHONPATH=$(dirname "$(dirname "$0")") python3 -m src.lib.brainxio "$@"

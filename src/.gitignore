@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.brainxio/venv/
+
+# Logs and cache
+.brainxio/brainxio.log
+.brainxio/cache/
+*.log
+*.tmp
+
+# IDE and editor files
+.vscode/
+.idea/
+
+.env
