@@ -3,13 +3,15 @@ from pathlib import Path
 from src.brainxio.utils.tasks import run_task
 from src.brainxio.errors import BrainXioError
 
-def test_run_task_success(tmp_path: Path) -> None:
+def test_run_task_success(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
     """Test run_task executes a valid task script."""
     task_dir = tmp_path / "tasks"
     task_dir.mkdir()
     task_file = task_dir / "test_task.py"
     task_file.write_text("def run(): print('Task executed')")
     run_task(task_dir, "test_task")
+    captured = capsys.readouterr()
+    assert "Task executed" in captured.out
 
 def test_run_task_missing_file(tmp_path: Path) -> None:
     """Test run_task raises error for missing task file."""
@@ -34,4 +36,14 @@ def test_run_task_execution_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     task_file = task_dir / "test_task.py"
     task_file.write_text("def run(): raise ValueError('Task error')")
     with pytest.raises(BrainXioError, match="Task execution failed: Task error"):
+        run_task(task_dir, "test_task")
+
+def test_run_task_load_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test run_task raises error for task load failure."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("def run(): pass")
+    monkeypatch.setattr("importlib.util.spec_from_file_location", lambda name, path: None)
+    with pytest.raises(BrainXioError, match="Failed to load task: test_task"):
         run_task(task_dir, "test_task")
