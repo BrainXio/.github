@@ -5,6 +5,7 @@ from config import settings
 from ..utils.cache import Cache
 from ..utils.config import Config
 from ..utils.logging import setup_logging
+from ..core.commands import CommandRegistry, ConfigCommand, ClearCacheCommand, ResetConfigCommand
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,8 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     config_parser.add_argument("action", choices=["show", "set"])
     config_parser.add_argument("key", nargs="?", help="Config key to set")
     config_parser.add_argument("value", nargs="?", help="Config value to set")
+    subparsers.add_parser("clear-cache", help="Clear the cache")
+    subparsers.add_parser("reset-config", help="Reset configuration to defaults")
     return parser.parse_args(args)
 
 def main() -> None:
@@ -24,16 +27,16 @@ def main() -> None:
     setup_logging()
     cache = Cache(settings.CACHE_FILE)
     config = Config(settings.CONFIG_FILE, cache)
+    registry = CommandRegistry()
+    registry.register("config", ConfigCommand(config))
+    registry.register("clear-cache", ClearCacheCommand(cache))
+    registry.register("reset-config", ResetConfigCommand(config))
     logger.info("Starting BrainXio CLI", extra={"cache_hit": cache.get("last_command") is not None})
     args = parse_args()
     cache.set("last_command", vars(args))
     cache.save()
-    if args.command == "config":
-        if args.action == "show":
-            print(config.get("log_dir", "No log_dir set"))
-        elif args.action == "set" and args.key and args.value:
-            config.set(args.key, args.value)
-            print(f"Set {args.key} to {args.value}")
+    if args.command:
+        registry.execute(args.command, vars(args))
     else:
         logger.info(f"CLI arguments: {vars(args)}")
         print("BrainXio CLI v0.1.0")

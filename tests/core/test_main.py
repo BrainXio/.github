@@ -3,8 +3,6 @@ import pytest
 import sys
 from pathlib import Path
 from src.brainxio.core.main import main, parse_args
-from src.brainxio.utils.cache import Cache
-from src.brainxio.utils.config import Config
 
 def test_main(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test main CLI entry point logs and outputs version."""
@@ -54,3 +52,25 @@ def test_config_set(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPat
     main()
     captured = capsys.readouterr()
     assert "Set log_dir to /new/log" in captured.out
+
+def test_clear_cache(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test clear-cache command clears cache."""
+    config_file = tmp_path / "config.yaml"
+    cache_file = tmp_path / "cache.json"
+    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
+    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
+    monkeypatch.setattr(sys, "argv", ["brainxio", "clear-cache"])
+    main()
+    captured = capsys.readouterr()
+    assert "Cache cleared successfully" in captured.out
+
+def test_reset_config(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test reset-config command resets configuration."""
+    config_file = tmp_path / "config.yaml"
+    cache_file = tmp_path / "cache.json"
+    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
+    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
+    monkeypatch.setattr(sys, "argv", ["brainxio", "reset-config"])
+    main()
+    captured = capsys.readouterr()
+    assert "Configuration reset to defaults" in captured.out

@@ -11,6 +11,13 @@ A modular, open-source Python CLI for automation and AI-driven tasks.
 ## Usage
 Run the CLI: `python src/brainxio/core/main.py`
 
+### Commands
+- `--version`: Display the BrainXio version.
+- `config show`: Display the current log_dir configuration.
+- `config set <key> <value>`: Set a configuration key (e.g., `log_dir /new/log`).
+- `clear-cache`: Clear the cache file.
+- `reset-config`: Reset configuration to defaults.
+
 ## Testing
 Run tests with coverage: `pytest --cov=src/brainxio`
 
