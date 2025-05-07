@@ -120,7 +120,10 @@ def test_plugin_loading_missing_register(tmp_path: Path, caplog: pytest.LogCaptu
     caplog.set_level(logging.WARNING)
     registry = CommandRegistry()
     registry.load_plugins(plugin_dir, config, cache)
-    assert "Plugin test_plugin missing register_command function" in caplog.text
+    assert any(
+        record.levelname == "WARNING" and "Plugin test_plugin missing register_command function" in record.message
+        for record in caplog.records
+    )
 
 def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test loading a plugin with execution error."""
