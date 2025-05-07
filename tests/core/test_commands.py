@@ -1,7 +1,7 @@
 import logging
 import pytest
 from pathlib import Path
-from src.brainxio.core.commands import CommandRegistry, ConfigCommand, ClearCacheCommand, ResetConfigCommand
+from src.brainxio.core.commands import CommandRegistry, ConfigCommand, ClearCacheCommand, ResetConfigCommand, Command
 from src.brainxio.utils.cache import Cache
 from src.brainxio.utils.config import Config
 from src.brainxio.errors import BrainXioError
@@ -63,3 +63,11 @@ def test_command_registry_unknown_command() -> None:
     registry = CommandRegistry()
     with pytest.raises(BrainXioError, match="Unknown command: invalid"):
         registry.execute("invalid", {})
+
+def test_command_execute_signature() -> None:
+    """Test Command execute method signature coverage."""
+    class MockCommand(Command):
+        def execute(self, args: Dict[str, Any]) -> None:
+            pass
+    command = MockCommand()
+    command.execute({})
