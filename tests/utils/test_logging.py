@@ -4,19 +4,37 @@ import os
 import pytest
 from pathlib import Path
 from src.brainxio.utils.logging import setup_logging, JSONFormatter
+from src.brainxio.errors import LoggingError
 
 def test_setup_logging(tmp_path: Path) -> None:
     """Test logging setup creates JSON log file."""
-    os.environ["HOME"] = str(tmp_path)
+    os.environ["LOG_DIR"] = str(tmp_path / "logs")
     setup_logging()
     logger = logging.getLogger(__name__)
     logger.info("Test log")
-    log_file = tmp_path / ".brainxio" / "log.json"
+    log_file = tmp_path / "logs" / "log.json"
     assert log_file.exists()
     with log_file.open() as f:
         log_entry = json.load(f)
         assert log_entry["message"] == "Test log"
         assert log_entry["level"] == "INFO"
+
+def test_setup_logging_permission_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test logging setup raises LoggingError on permission error."""
+    os.environ["LOG_DIR"] = str(tmp_path / "logs")
+    monkeypatch.setattr(os, "access", lambda x, y: False)
+    with pytest.raises(LoggingError, match="No write permission"):
+        setup_logging()
+
+def test_setup_logging_oserror(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test logging setup raises LoggingError on OSError."""
+    os.environ["LOG_DIR"] = str(tmp_path / "logs")
+    (tmp_path / "logs").mkdir()
+    def mock_filehandler(*args, **kwargs):
+        raise OSError("Mocked file error")
+    monkeypatch.setattr(logging, "FileHandler", mock_filehandler)
+    with pytest.raises(LoggingError, match="Failed to setup logging: Mocked file error"):
+        setup_logging()
 
 def test_json_formatter() -> None:
     """Test JSONFormatter formats logs correctly."""
