@@ -50,10 +50,22 @@ def test_config_load_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
         Config(config_file, cache)
 
 def test_config_save_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Test config save raises ConfigError on write error."""
+    """Test config save raises ConfigError on write permission error."""
     config_file = tmp_path / "config.yaml"
     cache = Cache(tmp_path / "cache.json")
     config = Config(config_file, cache)
     monkeypatch.setattr(os, "access", lambda x, y: False)
-    with pytest.raises(ConfigError, match="Failed to save config"):
+    monkeypatch.setattr(Cache, "save", lambda self: None)  # Mock cache.save to succeed
+    with pytest.raises(ConfigError, match="No write permission"):
+        config.set("log_dir", "/new/log")
+
+def test_config_save_yaml_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test config save raises ConfigError on YAML error."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    def mock_dump(*args, **kwargs):
+        raise yaml.YAMLError("Mocked YAML error")
+    monkeypatch.setattr(yaml, "safe_dump", mock_dump)
+    with pytest.raises(ConfigError, match="Failed to save config: Mocked YAML error"):
         config.set("log_dir", "/new/log")
