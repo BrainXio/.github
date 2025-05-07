@@ -21,5 +21,13 @@ Run the CLI: `python src/brainxio/core/main.py`
 ## Testing
 Run tests with coverage: `pytest --cov=src/brainxio`
 
+## Development
+Use the Makefile for common tasks:
+- `make install`: Install dependencies with Poetry.
+- `make test`: Run tests with pytest.
+- `make lock`: Update Poetry lock file.
+- `make update`: Apply cycle.json with experimental-f2c.
+- `make cycle`: Run the full development cycle (update, lock, install, test).
+
 ## License
 The Unlicense - see `LICENSING.md` for details.

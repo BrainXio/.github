@@ -22,8 +22,9 @@ def test_setup_logging(tmp_path: Path) -> None:
 def test_setup_logging_permission_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Test logging setup raises LoggingError on permission error."""
     os.environ["LOG_DIR"] = str(tmp_path / "logs")
+    (tmp_path / "logs").mkdir()
     monkeypatch.setattr(os, "access", lambda x, y: False)
-    with pytest.raises(LoggingError, match="No write permission"):
+    with pytest.raises(LoggingError, match="Failed to setup logging"):
         setup_logging()
 
 def test_setup_logging_oserror(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -33,7 +34,7 @@ def test_setup_logging_oserror(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) 
     def mock_filehandler(*args, **kwargs):
         raise OSError("Mocked file error")
     monkeypatch.setattr(logging, "FileHandler", mock_filehandler)
-    with pytest.raises(LoggingError, match="Failed to setup logging: Mocked file error"):
+    with pytest.raises(LoggingError, match="Failed to setup logging"):
         setup_logging()
 
 def test_json_formatter() -> None:

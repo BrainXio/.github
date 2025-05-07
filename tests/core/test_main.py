@@ -3,6 +3,8 @@ import pytest
 import sys
 from pathlib import Path
 from src.brainxio.core.main import main, parse_args
+from src.brainxio.utils.cache import Cache
+from src.brainxio.utils.config import Config
 
 def test_main(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test main CLI entry point logs and outputs version."""
