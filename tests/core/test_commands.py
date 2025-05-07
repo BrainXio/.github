@@ -164,7 +164,7 @@ def test_plugin_loading_missing_register(tmp_path: Path, caplog: pytest.LogCaptu
 def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test loading a plugin with execution error."""
     config_file = tmp_path / "config.yaml"
-    cache = Cache(tmp_path / "cache.json"
+    cache = Cache(tmp_path / "cache.json")
     config = Config(config_file, cache)
     plugin_dir = tmp_path / "plugins"
     plugin_dir.mkdir()
