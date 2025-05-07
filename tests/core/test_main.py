@@ -85,6 +85,9 @@ def test_run_task(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch
     task_dir.mkdir()
     task_file = task_dir / "test_task.py"
     task_file.write_text("def run(): print('Task executed')")
+    cache = Cache(cache_file)
+    config = Config(config_file, cache)
+    config.set("task_dir", str(task_dir))
     monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
     monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
     monkeypatch.setattr(sys, "argv", ["brainxio", "run-task", "test_task"])

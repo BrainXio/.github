@@ -24,7 +24,7 @@ def test_run_task_missing_run_function(tmp_path: Path) -> None:
     task_dir.mkdir()
     task_file = task_dir / "test_task.py"
     task_file.write_text("def other(): pass")
-    with pytest.raises(BrainXioError, match="missing run\(\) function"):
+    with pytest.raises(BrainXioError, match="missing run\\(\\) function"):
         run_task(task_dir, "test_task")
 
 def test_run_task_execution_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
