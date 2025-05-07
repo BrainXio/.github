@@ -30,8 +30,7 @@ def test_run_task_with_dependencies(tmp_path: Path, capsys: pytest.CaptureFixtur
     task_file1 = task_dir / "dep_task.py"
     task_file1.write_text("def run(): print('Dependency executed')")
     task_file2 = task_dir / "main_task.py"
-    task_file2.write_text("dependencies = ['dep_task']
-def run(): print('Main task executed')")
+    task_file2.write_text("dependencies = ['dep_task']\ndef run(): print('Main task executed')")
     run_task(task_dir, "main_task")
     captured = capsys.readouterr()
     assert "Dependency executed" in captured.out
@@ -42,11 +41,9 @@ def test_run_task_circular_dependency(tmp_path: Path) -> None:
     task_dir = tmp_path / "tasks"
     task_dir.mkdir()
     task_file1 = task_dir / "task1.py"
-    task_file1.write_text("dependencies = ['task2']
-def run(): pass")
+    task_file1.write_text("dependencies = ['task2']\ndef run(): pass")
     task_file2 = task_dir / "task2.py"
-    task_file2.write_text("dependencies = ['task1']
-def run(): pass")
+    task_file2.write_text("dependencies = ['task1']\ndef run(): pass")
     run_task(task_dir, "task1")
     # No assertion needed; test passes if no infinite recursion
 
