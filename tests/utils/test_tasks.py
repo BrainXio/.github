@@ -13,6 +13,43 @@ def test_run_task_success(tmp_path: Path, capsys: pytest.CaptureFixture) -> None
     captured = capsys.readouterr()
     assert "Task executed" in captured.out
 
+def test_run_task_with_params(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    """Test run_task with parameters."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("def run(key): print(f'Param: {key}')")
+    run_task(task_dir, "test_task", {"key": "value"})
+    captured = capsys.readouterr()
+    assert "Param: value" in captured.out
+
+def test_run_task_with_dependencies(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    """Test run_task with dependencies."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "dep_task.py"
+    task_file1.write_text("def run(): print('Dependency executed')")
+    task_file2 = task_dir / "main_task.py"
+    task_file2.write_text("dependencies = ['dep_task']
+def run(): print('Main task executed')")
+    run_task(task_dir, "main_task")
+    captured = capsys.readouterr()
+    assert "Dependency executed" in captured.out
+    assert "Main task executed" in captured.out
+
+def test_run_task_circular_dependency(tmp_path: Path) -> None:
+    """Test run_task handles circular dependencies."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("dependencies = ['task2']
+def run(): pass")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("dependencies = ['task1']
+def run(): pass")
+    run_task(task_dir, "task1")
+    # No assertion needed; test passes if no infinite recursion
+
 def test_run_task_missing_file(tmp_path: Path) -> None:
     """Test run_task raises error for missing task file."""
     task_dir = tmp_path / "tasks"
