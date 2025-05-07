@@ -95,3 +95,45 @@ def test_run_task(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch
     captured = capsys.readouterr()
     assert "Task executed" in captured.out
     assert "Task test_task executed successfully" in captured.out
+
+def test_run_task_with_params(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test run-task command with parameters."""
+    config_file = tmp_path / "config.yaml"
+    cache_file = tmp_path / "cache.json"
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("def run(key): print(f'Param: {key}')")
+    cache = Cache(cache_file)
+    config = Config(config_file, cache)
+    config.set("task_dir", str(task_dir))
+    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
+    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
+    monkeypatch.setattr(sys, "argv", ["brainxio", "run-task", "test_task", "--param", "key=value"])
+    main()
+    captured = capsys.readouterr()
+    assert "Param: value" in captured.out
+    assert "Task test_task executed successfully" in captured.out
+
+def test_run_task_multiple(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test run-task command with multiple tasks."""
+    config_file = tmp_path / "config.yaml"
+    cache_file = tmp_path / "cache.json"
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("def run(): print('Task1 executed')")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("def run(): print('Task2 executed')")
+    cache = Cache(cache_file)
+    config = Config(config_file, cache)
+    config.set("task_dir", str(task_dir))
+    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
+    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
+    monkeypatch.setattr(sys, "argv", ["brainxio", "run-task", "task1", "task2"])
+    main()
+    captured = capsys.readouterr()
+    assert "Task1 executed" in captured.out
+    assert "Task2 executed" in captured.out
+    assert "Task task1 executed successfully" in captured.out
+    assert "Task task2 executed successfully" in captured.out

@@ -17,7 +17,7 @@ Run the CLI: `python src/brainxio/core/main.py`
 - `config set <key> <value>`: Set a configuration key (allowed keys: `log_dir`, `cache_dir`, `task_dir`, `plugin_dir`; e.g., `log_dir /new/log`).
 - `clear-cache`: Clear the cache file.
 - `reset-config`: Reset configuration to defaults.
-- `run-task <task_name>`: Run a Python task script from the task directory (default: `$HOME/.brainxio/tasks/`).
+- `run-task <task_name> [<task_name>...] [--param key=value]...`: Run one or more Python task scripts from the task directory (default: `$HOME/.brainxio/tasks/`) with optional parameters.
 
 ### Plugins
 Extend BrainXio by adding plugins to the plugin directory (default: `$HOME/.brainxio/plugins/`). A plugin is a Python file defining a `register_command` function that returns a `Command` instance. Example:

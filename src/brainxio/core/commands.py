@@ -52,18 +52,20 @@ class ResetConfigCommand(Command):
         print("Configuration reset to defaults")
 
 class RunTaskCommand(Command):
-    """Runs a user-defined task script."""
+    """Runs user-defined task scripts."""
     def __init__(self, config: Config) -> None:
         self.config = config
 
     def execute(self, args: Dict[str, Any]) -> None:
-        task_name = args.get("task_name")
-        if not task_name:
-            raise BrainXioError("Task name required")
+        task_names = args.get("task_names", [])
+        params = args.get("params", {})
+        if not task_names:
+            raise BrainXioError("At least one task name required")
         task_dir = Path(self.config.get("task_dir", Path.home() / ".brainxio" / "tasks"))
-        logger.info(f"Running task: {task_name}")
-        run_task(task_dir, task_name)
-        print(f"Task {task_name} executed successfully")
+        for task_name in task_names:
+            logger.info(f"Running task: {task_name}")
+            run_task(task_dir, task_name, params)
+            print(f"Task {task_name} executed successfully")
 
 class CommandRegistry:
     """Manages CLI command registration and execution."""

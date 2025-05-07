@@ -21,8 +21,9 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     config_parser.add_argument("value", nargs="?", help="Config value to set")
     subparsers.add_parser("clear-cache", help="Clear the cache")
     subparsers.add_parser("reset-config", help="Reset configuration to defaults")
-    task_parser = subparsers.add_parser("run-task", help="Run a user-defined task")
-    task_parser.add_argument("task_name", help="Name of the task to run")
+    task_parser = subparsers.add_parser("run-task", help="Run user-defined tasks")
+    task_parser.add_argument("task_names", nargs="+", help="Names of tasks to run")
+    task_parser.add_argument("--param", action="append", help="Task parameters as key=value", default=[])
     return parser.parse_args(args)
 
 def main() -> None:
@@ -39,6 +40,9 @@ def main() -> None:
     registry.load_plugins(plugin_dir, config, cache)
     logger.info("Starting BrainXio CLI", extra={"cache_hit": cache.get("last_command") is not None})
     args = parse_args()
+    if args.command == "run-task":
+        params = dict(param.split("=", 1) for param in args.param) if args.param else {}
+        args.params = params
     cache.set("last_command", vars(args))
     cache.save()
     if args.command:

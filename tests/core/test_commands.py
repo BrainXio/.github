@@ -61,10 +61,46 @@ def test_run_task_command(capsys: pytest.CaptureFixture, tmp_path: Path, monkeyp
     task_file.write_text("def run(): print('Task executed')")
     config.set("task_dir", str(task_dir))
     command = RunTaskCommand(config)
-    command.execute({"task_name": "test_task"})
+    command.execute({"task_names": ["test_task"]})
     captured = capsys.readouterr()
     assert "Task executed" in captured.out
     assert "Task test_task executed successfully" in captured.out
+
+def test_run_task_command_with_params(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test RunTaskCommand with parameters."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("def run(key): print(f'Param: {key}')")
+    config.set("task_dir", str(task_dir))
+    command = RunTaskCommand(config)
+    command.execute({"task_names": ["test_task"], "params": {"key": "value"}})
+    captured = capsys.readouterr()
+    assert "Param: value" in captured.out
+    assert "Task test_task executed successfully" in captured.out
+
+def test_run_task_command_multiple_tasks(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test RunTaskCommand with multiple tasks."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("def run(): print('Task1 executed')")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("def run(): print('Task2 executed')")
+    config.set("task_dir", str(task_dir))
+    command = RunTaskCommand(config)
+    command.execute({"task_names": ["task1", "task2"]})
+    captured = capsys.readouterr()
+    assert "Task1 executed" in captured.out
+    assert "Task2 executed" in captured.out
+    assert "Task task1 executed successfully" in captured.out
+    assert "Task task2 executed successfully" in captured.out
 
 def test_run_task_command_missing_task(tmp_path: Path) -> None:
     """Test RunTaskCommand raises error for missing task."""
@@ -73,7 +109,7 @@ def test_run_task_command_missing_task(tmp_path: Path) -> None:
     config = Config(config_file, cache)
     command = RunTaskCommand(config)
     with pytest.raises(BrainXioError, match="Task not found"):
-        command.execute({"task_name": "missing_task"})
+        command.execute({"task_names": ["missing_task"]})
 
 def test_run_task_command_no_task_name(tmp_path: Path) -> None:
     """Test RunTaskCommand raises error for no task name."""
@@ -81,8 +117,8 @@ def test_run_task_command_no_task_name(tmp_path: Path) -> None:
     cache = Cache(tmp_path / "cache.json")
     config = Config(config_file, cache)
     command = RunTaskCommand(config)
-    with pytest.raises(BrainXioError, match="Task name required"):
-        command.execute({})
+    with pytest.raises(BrainXioError, match="At least one task name required"):
+        command.execute({"task_names": []})
 
 def test_plugin_loading_success(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test loading a valid plugin."""
@@ -128,7 +164,7 @@ def test_plugin_loading_missing_register(tmp_path: Path, caplog: pytest.LogCaptu
 def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test loading a plugin with execution error."""
     config_file = tmp_path / "config.yaml"
-    cache = Cache(tmp_path / "cache.json")
+    cache = Cache(tmp_path / "cache.json"
     config = Config(config_file, cache)
     plugin_dir = tmp_path / "plugins"
     plugin_dir.mkdir()
