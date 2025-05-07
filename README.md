@@ -14,7 +14,7 @@ Run the CLI: `python src/brainxio/core/main.py`
 ### Commands
 - `--version`: Display the BrainXio version.
 - `config show`: Display the current log_dir configuration.
-- `config set <key> <value>`: Set a configuration key (e.g., `log_dir /new/log`).
+- `config set <key> <value>`: Set a configuration key (allowed keys: `log_dir`, `cache_dir`, `task_dir`; e.g., `log_dir /new/log`).
 - `clear-cache`: Clear the cache file.
 - `reset-config`: Reset configuration to defaults.
 - `run-task <task_name>`: Run a Python task script from the task directory (default: `$HOME/.brainxio/tasks/`).

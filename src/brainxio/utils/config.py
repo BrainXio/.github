@@ -7,6 +7,8 @@ from ..utils.cache import Cache
 
 class Config:
     """Manages configuration from YAML file and cache."""
+    ALLOWED_KEYS = {"log_dir", "cache_dir", "task_dir"}
+
     def __init__(self, config_file: Path, cache: Cache) -> None:
         self._config_file = config_file
         self._cache = cache
@@ -34,8 +36,14 @@ class Config:
         """Get configuration value."""
         return self._config.get(key, default)
 
+    def validate_key(self, key: str) -> None:
+        """Validate configuration key."""
+        if key not in self.ALLOWED_KEYS:
+            raise ConfigError(f"Invalid configuration key: {key}")
+
     def set(self, key: str, value: Any) -> None:
         """Set configuration value and save."""
+        self.validate_key(key)
         self._config[key] = value
         self._cache.set("config", self._config)
         try:

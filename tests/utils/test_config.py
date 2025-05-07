@@ -69,3 +69,11 @@ def test_config_save_yaml_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
     monkeypatch.setattr(yaml, "safe_dump", mock_dump)
     with pytest.raises(ConfigError, match="Failed to save config: Mocked YAML error"):
         config.set("log_dir", "/new/log")
+
+def test_config_invalid_key(tmp_path: Path) -> None:
+    """Test setting invalid config key raises ConfigError."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    with pytest.raises(ConfigError, match="Invalid configuration key: invalid_key"):
+        config.set("invalid_key", "value")
