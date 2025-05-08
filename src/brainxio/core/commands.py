@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 import importlib.util
 import importlib.metadata
+import sys
 
 logger = logging.getLogger(__name__)
 from ..utils.tasks import run_task, run_tasks_parallel
@@ -31,6 +32,7 @@ class ConfigCommand(Command):
         if key and value:
             self.config.set(key, value)
             print(f"Set {key} = {value}")
+            logger.info(f"Set configuration: {key} = {value}")
         elif key:
             print(f"{key} = {self.config.get(key)}")
         else:
@@ -43,7 +45,8 @@ class ClearCacheCommand(Command):
 
     def execute(self, args: Dict[str, Any]) -> None:
         self.config.clear()
-        print("Cache cleared")
+        print("Cache cleared successfully")
+        logger.info("Cache cleared successfully")
 
 
 class ResetConfigCommand(Command):
@@ -52,6 +55,7 @@ class ResetConfigCommand(Command):
     def execute(self, args: Dict[str, Any]) -> None:
         self.config.reset()
         print("Configuration reset to defaults")
+        logger.info("Configuration reset to defaults")
 
 
 class RunTaskCommand(Command):
@@ -68,14 +72,13 @@ class RunTaskCommand(Command):
         timeout = int(self.config.get("timeout", 60))
         if parallel:
             run_tasks_parallel(task_dir, task_names, params, max_retries, timeout)
-            for task_name in task_names:
-                print(f"Task {task_name} executed successfully")
         else:
             for task_name in task_names:
                 logger.info(f"Running task: {task_name}")
                 task_result, task_exception = run_task(task_dir, task_name, params, max_retries=max_retries, timeout=timeout)
                 if task_exception:
                     raise task_exception
+                print(f"Task {task_name} executed successfully")
 
 
 class CommandRegistry:
@@ -99,6 +102,8 @@ class CommandRegistry:
         self.commands[name].execute(args)
 
     def load_plugins(self) -> None:
+        """Load plugins from entry_points and plugin_dir."""
+        # Load from entry_points
         try:
             for plugin in importlib.metadata.entry_points().select(group="brainxio.plugins"):
                 try:
@@ -111,3 +116,26 @@ class CommandRegistry:
                     logger.error(f"Failed to load plugin {plugin.name}: {e}")
         except Exception as e:
             logger.error(f"Error discovering plugins: {e}")
+
+        # Load from plugin_dir
+        plugin_dir = self.config.get("plugin_dir")
+        if plugin_dir:
+            plugin_dir = Path(plugin_dir)
+            if plugin_dir.exists():
+                sys.path.append(str(plugin_dir))
+                for plugin_file in plugin_dir.glob("*.py"):
+                    plugin_name = plugin_file.stem
+                    try:
+                        spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
+                        if spec and spec.loader:
+                            module = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(module)
+                            if hasattr(module, "register_command"):
+                                module.register_command(self)
+                            else:
+                                logger.warning(f"Plugin {plugin_name} missing register_command function")
+                        else:
+                            logger.error(f"Failed to load plugin {plugin_name}: Invalid module spec")
+                    except Exception as e:
+                        logger.error(f"Failed to load plugin {plugin_name}: {e}")
+                sys.path.remove(str(plugin_dir))

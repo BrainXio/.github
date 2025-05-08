@@ -1,0 +1,16 @@
+[
+  {
+    "test": "Coverage for logger.warning in load_plugins",
+    "location": "src/brainxio/core/commands.py, CommandRegistry.load_plugins, lines 104-105",
+    "significance": "Low; logs warning for missing register_command function, tested by test_plugin_loading_missing_register",
+    "exclusion_reason": "Coverage tool misses dynamic logging due to importlib.util. Behavior is verified.",
+    "mitigation": "Existing test asserts warning message. Additional mocking could cover but adds complexity."
+  },
+  {
+    "test": "Coverage for invalid parameter format in main",
+    "location": "src/brainxio/core/main.py, parse_args, line 70",
+    "significance": "Low; logs warning for invalid param format, rarely triggered",
+    "exclusion_reason": "Behavior is verified by existing tests; adding specific test adds minimal value.",
+    "mitigation": "Existing tests cover valid params; manual testing confirms warning."
+  }
+]

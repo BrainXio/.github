@@ -21,8 +21,8 @@ settings = Settings()
 
 def parse_args(args: Optional[List[str]] = None) -> argparse.Namespace:
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(description="BrainXio CLI", prog="brainxio")
-    parser.add_argument("--version", action="version", version="0.1.0")
+    parser = argparse.ArgumentParser(description="BrainXio CLI for automation and AI tasks", prog="brainxio")
+    parser.add_argument("--version", action="version", version="BrainXio 0.1.0")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     config_parser = subparsers.add_parser("config", help="Manage configuration")
@@ -38,7 +38,9 @@ def parse_args(args: Optional[List[str]] = None) -> argparse.Namespace:
     run_task_parser.add_argument("--param", action="append", help="Task parameter in key=value format", default=[])
     run_task_parser.add_argument("--parallel", action="store_true", help="Run tasks in parallel")
 
-    return parser.parse_args(args)
+    parsed_args = parser.parse_args(args)
+    logger.info(f"CLI arguments: {vars(parsed_args)}")
+    return parsed_args
 
 
 def main() -> None:

@@ -21,7 +21,7 @@ def test_config_command_show(capsys: pytest.CaptureFixture, config: Config) -> N
     command = ConfigCommand(config)
     command.execute({"action": "show"})
     captured = capsys.readouterr()
-    assert captured.out == ""
+    assert "log_dir = " + str(Path.home() / ".brainxio") in captured.out
 
 
 def test_config_command_set(capsys: pytest.CaptureFixture, config: Config) -> None:
@@ -39,7 +39,7 @@ def test_clear_cache_command(caplog: pytest.LogCaptureFixture, config: Config) -
     caplog.set_level(logging.INFO)
     command.execute({})
     assert config.cache.get("test") is None
-    assert "Cache cleared" in caplog.text
+    assert "Cache cleared successfully" in caplog.text
 
 
 def test_reset_config_command(caplog: pytest.LogCaptureFixture, config: Config) -> None:
@@ -66,6 +66,7 @@ def test_run_task_command(capsys: pytest.CaptureFixture, tmp_path: Path, monkeyp
     command.execute({"task_names": ["test_task"]})
     captured = capsys.readouterr()
     assert "Task executed" in captured.out
+    assert "Task test_task executed successfully" in captured.out
 
 
 def test_run_task_command_with_params(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -82,6 +83,7 @@ def test_run_task_command_with_params(capsys: pytest.CaptureFixture, tmp_path: P
     command.execute({"task_names": ["test_task"], "params": {"key": "value"}})
     captured = capsys.readouterr()
     assert "Param: value" in captured.out
+    assert "Task test_task executed successfully" in captured.out
 
 
 def test_run_task_command_multiple_tasks(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -101,6 +103,8 @@ def test_run_task_command_multiple_tasks(capsys: pytest.CaptureFixture, tmp_path
     captured = capsys.readouterr()
     assert "Task1 executed" in captured.out
     assert "Task2 executed" in captured.out
+    assert "Task task1 executed successfully" in captured.out
+    assert "Task task2 executed successfully" in captured.out
 
 
 def test_run_task_command_with_max_retries(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -122,6 +126,7 @@ def test_run_task_command_with_max_retries(capsys: pytest.CaptureFixture, tmp_pa
     assert "Task executed" in captured.out
     with count_file.open("r") as f:
         assert int(f.read()) == 2
+    assert "Task test_task executed successfully" in captured.out
 
 
 def test_run_task_command_parallel(capsys: pytest.CaptureFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -157,7 +162,7 @@ def test_run_task_command_parallel_failure(capsys: pytest.CaptureFixture, tmp_pa
     config.set("task_dir", str(task_dir))
     config.set("max_retries", "0")
     command = RunTaskCommand(config)
-    with pytest.raises(BrainXioError, match="Task task1 failed to complete"):
+    with pytest.raises(BrainXioError, match="Task task1 failed to complete: Task1 error"):
         command.execute({"task_names": ["task1", "task2"], "parallel": True})
     captured = capsys.readouterr()
     assert "Task2 executed" in captured.out
@@ -192,19 +197,22 @@ def test_plugin_loading_success(capsys: pytest.CaptureFixture, tmp_path: Path, m
     plugin_dir.mkdir()
     plugin_file = plugin_dir / "test_plugin.py"
     plugin_file.write_text("""
-    from src.brainxio.core.commands import Command, CommandRegistry
-    class TestPluginCommand(Command):
-        def execute(self, args):
-            print('Plugin executed')
-    def register_command(registry: CommandRegistry):
-        registry.register_command('test-plugin', TestPluginCommand(registry.config))
+from src.brainxio.core.commands import Command, CommandRegistry
+class TestPluginCommand(Command):
+    def execute(self, args):
+        print('Plugin executed')
+def register_command(registry: CommandRegistry):
+    registry.register_command('test-plugin', TestPluginCommand(registry.config))
     """)
     config.set("plugin_dir", str(plugin_dir))
-    monkeypatch.setitem(__import__('sys').modules, 'test_plugin', __import__('importlib').import_module(str(plugin_file).replace('.py', '')))
-    registry = CommandRegistry(config)
-    registry.execute("test-plugin", {})
-    captured = capsys.readouterr()
-    assert "Plugin executed" in captured.out
+    sys.path.append(str(plugin_dir))
+    try:
+        registry = CommandRegistry(config)
+        registry.execute("test-plugin", {})
+        captured = capsys.readouterr()
+        assert "Plugin executed" in captured.out
+    finally:
+        sys.path.remove(str(plugin_dir))
 
 
 def test_plugin_loading_missing_register(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
@@ -218,8 +226,12 @@ def test_plugin_loading_missing_register(tmp_path: Path, caplog: pytest.LogCaptu
     plugin_file.write_text("def other(): pass")
     config.set("plugin_dir", str(plugin_dir))
     caplog.set_level(logging.WARNING)
-    registry = CommandRegistry(config)
-    assert "Plugin test_plugin missing register_command function" in caplog.text
+    sys.path.append(str(plugin_dir))
+    try:
+        registry = CommandRegistry(config)
+        assert "Plugin test_plugin missing register_command function" in caplog.text
+    finally:
+        sys.path.remove(str(plugin_dir))
 
 
 def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -233,14 +245,18 @@ def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, 
     plugin_file.write_text("raise ValueError('Plugin error')")
     config.set("plugin_dir", str(plugin_dir))
     caplog.set_level(logging.ERROR)
-    registry = CommandRegistry(config)
-    assert "Failed to load plugin test_plugin" in caplog.text
+    sys.path.append(str(plugin_dir))
+    try:
+        registry = CommandRegistry(config)
+        assert "Failed to load plugin test_plugin" in caplog.text
+    finally:
+        sys.path.remove(str(plugin_dir))
 
 
 def test_command_registry_execute(tmp_path: Path) -> None:
     """Test CommandRegistry executes registered commands."""
     config_file = tmp_path / "config.yaml"
-    cache = Cache(tmp_path / "cache.json"
+    cache = Cache(tmp_path / "cache.json")
     config = Config(config_file, cache)
     registry = CommandRegistry(config)
     registry.execute("config", {"action": "show"})

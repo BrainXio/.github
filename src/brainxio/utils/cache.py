@@ -1,7 +1,10 @@
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Dict, Any, Optional
+
+from ..errors import CacheError
 
 logger = logging.getLogger(__name__)
 
@@ -21,18 +24,21 @@ class Cache:
                 with self.cache_file.open("r") as f:
                     self._cache = json.load(f)
                 logger.debug(f"Loaded cache: {self._cache}")
-        except (json.JSONDecodeError, OSError) as e:
-            logger.warning(f"Failed to load cache: {e}")
-            self._cache = {}
+        except json.JSONDecodeError as e:
+            raise CacheError(f"Failed to load cache: {e}")
+        except OSError as e:
+            raise CacheError(f"Failed to load cache: {e}")
 
     def save(self) -> None:
         """Save cache to file."""
         try:
+            if not os.access(self.cache_file.parent, os.W_OK):
+                raise CacheError(f"No write permission for {self.cache_file.parent}")
             self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             with self.cache_file.open("w") as f:
                 json.dump(self._cache, f, indent=2)
         except OSError as e:
-            logger.warning(f"Failed to save cache: {e}")
+            raise CacheError(f"Failed to save cache: {e}")
 
     def get(self, key: str, default: Optional[Any] = None) -> Any:
         """Get cache value by key."""
