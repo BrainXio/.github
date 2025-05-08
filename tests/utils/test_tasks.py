@@ -61,7 +61,7 @@ def test_run_task_with_dependencies(tmp_path: Path, capsys: pytest.CaptureFixtur
     assert any(log["task_name"] == "main_task" and log["status"] == "completed" for log in logs)
 
 
-def test_run_task_circular_dependency(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+def test_run_task_circular_dependency(tmp_path: Path, capsys: pytest.CaptureFixture, caplog: pytest.LogCaptureFixture) -> None:
     """Test run_task handles circular dependencies."""
     task_dir = tmp_path / "tasks"
     task_dir.mkdir()
@@ -69,14 +69,41 @@ def test_run_task_circular_dependency(tmp_path: Path, capsys: pytest.CaptureFixt
     task_file1.write_text("dependencies = ['task2']\ndef run(): print('Task1 executed')")
     task_file2 = task_dir / "task2.py"
     task_file2.write_text("dependencies = ['task1']\ndef run(): print('Task2 executed')")
+    caplog.set_level(logging.WARNING)
     run_task(task_dir, "task1")
     captured = capsys.readouterr()
     assert "Task1 executed" in captured.out
     assert "Task2 executed" in captured.out
+    assert "Skipping circular dependency: task1" in caplog.text
     log_file = tmp_path / "logs" / "tasks.json"
     with log_file.open() as f:
         logs = [json.loads(line) for line in f]
     assert any(log["task_name"] == "task1" and log["status"] == "completed" for log in logs)
+
+
+def test_run_task_circular_dependency_warning(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test run_task logs warning for circular dependency explicitly."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("dependencies = ['task2']\ndef run(): print('Task1 executed')")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("dependencies = ['task1']\ndef run(): print('Task2 executed')")
+    caplog.set_level(logging.WARNING)
+    run_task(task_dir, "task1", dependency_chain={"task1"})
+    assert "Skipping circular dependency: task1" in caplog.text
+
+
+def test_run_task_already_executed(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    """Test run_task logs debug message for already executed task."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("def run(): print('Task executed')")
+    executed = {"test_task": True}
+    caplog.set_level(logging.DEBUG)
+    run_task(task_dir, "test_task", executed=executed)
+    assert "Task test_task already executed, skipping" in caplog.text
 
 
 def test_run_task_missing_file(tmp_path: Path) -> None:
@@ -172,7 +199,7 @@ def test_run_tasks_parallel_success(tmp_path: Path, capsys: pytest.CaptureFixtur
     assert "Task2 executed" in captured.out
 
 
-def test_run_tasks_parallel_failure(tmp_path: Path) -> None:
+def test_run_tasks_parallel_failure(tmp_path: Path, capsys: pytest.CaptureFixture, caplog: pytest.LogCaptureFixture) -> None:
     """Test run_tasks_parallel raises error for task failure."""
     task_dir = tmp_path / "tasks"
     task_dir.mkdir()
@@ -180,5 +207,21 @@ def test_run_tasks_parallel_failure(tmp_path: Path) -> None:
     task_file1.write_text("def run(): raise ValueError('Task1 error')")
     task_file2 = task_dir / "task2.py"
     task_file2.write_text("def run(): print('Task2 executed')")
+    caplog.set_level(logging.ERROR)
     with pytest.raises(BrainXioError, match="Task task1 failed to complete: Task1 error"):
         run_tasks_parallel(task_dir, ["task1", "task2"], {}, max_retries=0, timeout=10)
+    captured = capsys.readouterr()
+    assert "Task2 executed" in captured.out
+    assert "Task task1 attempt 1 failed: Task1 error" in caplog.text
+
+
+def test_run_tasks_parallel_exception_handling(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    """Test run_tasks_parallel handles unexpected exceptions."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "task1.py"
+    task_file.write_text("def run(): raise Exception('Unexpected error')")
+    caplog.set_level(logging.ERROR)
+    with pytest.raises(BrainXioError, match="Task task1 failed to complete: Unexpected error"):
+        run_tasks_parallel(task_dir, ["task1"], {}, max_retries=0, timeout=10)
+    assert "Task task1 attempt 1 failed: Unexpected error" in caplog.text

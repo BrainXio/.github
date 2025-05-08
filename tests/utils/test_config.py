@@ -1,4 +1,5 @@
 import os
+import logging
 import yaml
 import pytest
 from pathlib import Path
@@ -30,6 +31,38 @@ def test_config_load_from_cache(tmp_path: Path) -> None:
     cache.save()
     config = Config(config_file, cache)
     assert config.get("log_dir") == "/cached/log"
+
+def test_config_load_cache_debug_log(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test debug logging during config load from cache."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    cache.set("config", {"log_dir": "/cached/log"})
+    cache.save()
+    caplog.set_level(logging.DEBUG)
+    config = Config(config_file, cache)
+    assert config.get("log_dir") == "/cached/log"
+    assert "Loaded config from cache: {'log_dir': '/cached/log'}" in caplog.text
+
+def test_config_load_file_debug_log(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test debug logging during config load from file."""
+    config_file = tmp_path / "config.yaml"
+    with config_file.open("w") as f:
+        yaml.safe_dump({"log_dir": "/custom/log"}, f)
+    cache = Cache(tmp_path / "cache.json")
+    caplog.set_level(logging.DEBUG)
+    config = Config(config_file, cache)
+    assert config.get("log_dir") == "/custom/log"
+    assert "Loaded config from file: {'log_dir': '/custom/log'}" in caplog.text
+
+def test_config_load_empty_file_debug_log(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test debug logging during config load with empty file."""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text("")
+    cache = Cache(tmp_path / "cache.json")
+    caplog.set_level(logging.DEBUG)
+    config = Config(config_file, cache)
+    assert config.get("log_dir") is None
+    assert "Loaded config from file: {}" in caplog.text
 
 def test_config_set_and_save(tmp_path: Path) -> None:
     """Test setting and saving config."""
@@ -103,3 +136,22 @@ def test_config_max_retries_invalid(tmp_path: Path) -> None:
         config.set("max_retries", "invalid")
     with pytest.raises(ConfigError, match="Invalid max_retries value: max_retries must be non-negative"):
         config.set("max_retries", "-1")
+
+def test_config_timeout_invalid(tmp_path: Path) -> None:
+    """Test setting invalid timeout raises ConfigError."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    with pytest.raises(ConfigError, match="Invalid timeout value"):
+        config.set("timeout", "invalid")
+    with pytest.raises(ConfigError, match="Invalid timeout value: timeout must be positive"):
+        config.set("timeout", "0")
+
+def test_config_reset_debug_log(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test debug logging during config reset."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    caplog.set_level(logging.DEBUG)
+    config.reset()
+    assert "Configuration reset to empty state" in caplog.text

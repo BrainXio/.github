@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pytest
 from pathlib import Path
@@ -18,6 +19,26 @@ def test_cache_load(tmp_path: Path) -> None:
         json.dump({"key": "value"}, f)
     cache = Cache(cache_file)
     assert cache.get("key") == "value"
+
+def test_cache_load_debug_log(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test debug logging during cache load."""
+    cache_file = tmp_path / "cache.json"
+    with cache_file.open("w") as f:
+        json.dump({"key": "value"}, f)
+    caplog.set_level(logging.DEBUG)
+    cache = Cache(cache_file)
+    assert cache.get("key") == "value"
+    assert "Loaded cache: {'key': 'value'}" in caplog.text
+
+def test_cache_load_empty_debug_log(caplog: pytest.LogCaptureFixture, tmp_path: Path) -> None:
+    """Test debug logging during cache load with empty cache."""
+    cache_file = tmp_path / "cache.json"
+    with cache_file.open("w") as f:
+        json.dump({}, f)
+    caplog.set_level(logging.DEBUG)
+    cache = Cache(cache_file)
+    assert cache.get("key") is None
+    assert "Loaded cache: {}" in caplog.text
 
 def test_cache_save(tmp_path: Path) -> None:
     """Test saving cache to disk."""

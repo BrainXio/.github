@@ -253,6 +253,60 @@ def test_plugin_loading_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, 
         sys.path.remove(str(plugin_dir))
 
 
+def test_plugin_loading_entry_point_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test loading a plugin with entry point error logs error."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    def mock_entry_points():
+        raise Exception("Entry point error")
+    monkeypatch.setattr("importlib.metadata.entry_points", mock_entry_points)
+    caplog.set_level(logging.ERROR)
+    registry = CommandRegistry(config)
+    assert "Error discovering plugins: Entry point error" in caplog.text
+
+
+def test_plugin_loading_dir_error(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test loading a plugin from directory with spec error logs error."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    plugin_dir = tmp_path / "plugins"
+    plugin_dir.mkdir()
+    plugin_file = plugin_dir / "test_plugin.py"
+    plugin_file.write_text("def run(): pass")  # Invalid plugin
+    config.set("plugin_dir", str(plugin_dir))
+    def mock_spec_from_file_location(name, path):
+        return None
+    monkeypatch.setattr("importlib.util.spec_from_file_location", mock_spec_from_file_location)
+    caplog.set_level(logging.ERROR)
+    sys.path.append(str(plugin_dir))
+    try:
+        registry = CommandRegistry(config)
+        assert "Failed to load plugin test_plugin: Invalid module spec" in caplog.text
+    finally:
+        sys.path.remove(str(plugin_dir))
+
+
+def test_plugin_loading_invalid_module(tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test loading a plugin with invalid module raises error."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    plugin_dir = tmp_path / "plugins"
+    plugin_dir.mkdir()
+    plugin_file = plugin_dir / "test_plugin.py"
+    plugin_file.write_text("invalid syntax code")  # Invalid Python syntax
+    config.set("plugin_dir", str(plugin_dir))
+    caplog.set_level(logging.ERROR)
+    sys.path.append(str(plugin_dir))
+    try:
+        registry = CommandRegistry(config)
+        assert "Failed to load plugin test_plugin: invalid syntax" in caplog.text
+    finally:
+        sys.path.remove(str(plugin_dir))
+
+
 def test_command_registry_execute(tmp_path: Path) -> None:
     """Test CommandRegistry executes registered commands."""
     config_file = tmp_path / "config.yaml"

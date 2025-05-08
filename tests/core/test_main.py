@@ -6,16 +6,27 @@ import json
 from src.brainxio.core.main import main, parse_args
 from src.brainxio.utils.cache import Cache
 from src.brainxio.utils.config import Config
+from src.brainxio.errors import BrainXioError
 
 def test_main(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test main CLI entry point logs and outputs version."""
     monkeypatch.setattr(sys, "argv", ["brainxio"])
     caplog.set_level(logging.INFO)
-    main()
+    with pytest.raises(SystemExit):
+        main()
     captured = capsys.readouterr()
     assert "Starting BrainXio CLI" in caplog.text
-    assert "CLI arguments: {'command': None}" in caplog.text
-    assert "BrainXio CLI version 0.1.0" in captured.out
+    assert "BrainXio CLI version 0.1.0" in captured.err
+
+def test_main_unknown_command(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test main CLI raises SystemExit for unknown command."""
+    monkeypatch.setattr(sys, "argv", ["brainxio", "unknown"])
+    caplog.set_level(logging.WARNING)
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "invalid choice: 'unknown'" in captured.err
 
 def test_parse_args_version(capsys: pytest.CaptureFixture) -> None:
     """Test --version argument displays version and exits."""
@@ -30,6 +41,33 @@ def test_parse_args_help(capsys: pytest.CaptureFixture) -> None:
         parse_args(["--help"])
     captured = capsys.readouterr()
     assert "BrainXio CLI for automation and AI tasks" in captured.out
+
+def test_parse_args_invalid_param(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test parse_args raises SystemExit for invalid parameter format."""
+    monkeypatch.setattr(sys, "argv", ["brainxio", "run-task", "test_task", "--param", "invalid"])
+    caplog.set_level(logging.WARNING)
+    with pytest.raises(SystemExit):
+        parse_args()
+    captured = capsys.readouterr()
+    assert "Invalid parameter format: invalid; expected key=value" in captured.err
+
+def test_parse_args_argument_error(caplog: pytest.LogCaptureFixture, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test parse_args handles ArgumentError explicitly."""
+    monkeypatch.setattr(sys, "argv", ["brainxio", "invalid_command"])
+    caplog.set_level(logging.WARNING)
+    with pytest.raises(SystemExit) as exc_info:
+        parse_args()
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "invalid choice: 'invalid_command'" in captured.err
+
+def test_parse_args_argument_error_edge_case(capsys: pytest.CaptureFixture) -> None:
+    """Test parse_args handles ArgumentError for edge case explicitly."""
+    with pytest.raises(SystemExit) as exc_info:
+        parse_args(["invalid_command"])
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "invalid choice: 'invalid_command'" in captured.err
 
 def test_config_show(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Test config show command displays log_dir."""
