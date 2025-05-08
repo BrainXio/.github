@@ -85,3 +85,21 @@ def test_config_plugin_dir(tmp_path: Path) -> None:
     config = Config(config_file, cache)
     config.set("plugin_dir", "/custom/plugins")
     assert config.get("plugin_dir") == "/custom/plugins"
+
+def test_config_max_retries_valid(tmp_path: Path) -> None:
+    """Test setting valid max_retries."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    config.set("max_retries", "5")
+    assert config.get("max_retries") == 5
+
+def test_config_max_retries_invalid(tmp_path: Path) -> None:
+    """Test setting invalid max_retries raises ConfigError."""
+    config_file = tmp_path / "config.yaml"
+    cache = Cache(tmp_path / "cache.json")
+    config = Config(config_file, cache)
+    with pytest.raises(ConfigError, match="Invalid max_retries value"):
+        config.set("max_retries", "invalid")
+    with pytest.raises(ConfigError, match="Invalid max_retries value: max_retries must be non-negative"):
+        config.set("max_retries", "-1")

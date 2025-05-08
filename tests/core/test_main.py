@@ -137,3 +137,31 @@ def test_run_task_multiple(capsys: pytest.CaptureFixture, monkeypatch: pytest.Mo
     assert "Task2 executed" in captured.out
     assert "Task task1 executed successfully" in captured.out
     assert "Task task2 executed successfully" in captured.out
+
+def test_run_task_parallel(capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Test run-task command with parallel execution."""
+    config_file = tmp_path / "config.yaml"
+    cache_file = tmp_path / "cache.json"
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("def run(): print('Task1 executed')")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("def run(): print('Task2 executed')")
+    cache = Cache(cache_file)
+    config = Config(config_file, cache)
+    config.set("task_dir", str(task_dir))
+    monkeypatch.setattr("config.settings.CONFIG_FILE", config_file)
+    monkeypatch.setattr("config.settings.CACHE_FILE", cache_file)
+    monkeypatch.setattr(sys, "argv", ["brainxio", "run-task", "task1", "task2", "--parallel"])
+    main()
+    captured = capsys.readouterr()
+    assert "Task1 executed" in captured.out
+    assert "Task2 executed" in captured.out
+    assert "Task task1 executed successfully" in captured.out
+    assert "Task task2 executed successfully" in captured.out
+    log_file = tmp_path / "logs" / "tasks.json"
+    with log_file.open() as f:
+        logs = json.load(f)
+    assert any(log["task_name"] == "task1" and log["status"] == "completed" for log in logs)
+    assert any(log["task_name"] == "task2" and log["status"] == "completed" for log in logs)

@@ -1,40 +1,30 @@
-[project]
-name = "brainxio"
-version = "0.1.0"
-description = "A modular Python CLI for automation and AI-driven tasks"
-readme = "README.md"
-requires-python = ">=3.12"
-license = {text = "The Unlicense"}
-dependencies = [
-    "pytest==8.3.2",
-    "pytest-cov==5.0.0",
-    "typeguard==4.3.0",
-    "python-dotenv==1.0.1",
-    "pyyaml==6.0.2"
-]
+[tool.pytest.ini_options]
+addopts = "--cov=src/brainxio --timeout=120"
+timeout = 120
+
+[tool.coverage.run]
+source = ["src/brainxio"]
+
+[tool.coverage.report]
+show_missing = true
 
 [tool.poetry]
 name = "brainxio"
 version = "0.1.0"
-description = "A modular Python CLI for automation and AI-driven tasks"
-readme = "README.md"
+description = "A modular CLI for automation and AI-driven tasks"
+authors = ["Your Name <you@example.com>"]
 license = "Unlicense"
-authors = ["BrainXio <github@brain-x.io>"]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-pytest = "8.3.2"
-pytest-cov = "5.0.0"
-typeguard = "4.3.0"
-python-dotenv = "1.0.1"
-pyyaml = "6.0.2"
+pyyaml = "^6.0"
 
-[tool.black]
-line-length = 88
+[tool.poetry.dev-dependencies]
+pytest = "^8.3"
+pytest-cov = "^5.0"
+pytest-timeout = "^2.3"
 
-[tool.pytest.ini_options]
-addopts = "--cov=src/brainxio --cov-report=term-missing"
-
-[tool.coverage.run]
-source = ["src/brainxio"]
-omit = ["*/__init__.py"]
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

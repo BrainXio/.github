@@ -15,9 +15,15 @@ lock:
 	poetry lock --no-update
 
 update:
+	experimental-f2c update cycle.json
+
+commit:
 	experimental-f2c update cycle.json --git
 
-cycle: update lock install test
+snapshot:
+	experimental-f2c snapshot
+
+cycle: update lock install test commit
 	@echo "Tests passed successfully."
 	@echo "If codebase is optimal, recommend next development step."
 	@echo "If improvable, analyze code, identify optimal solution, evaluate implications, and apply fix only if it meets required standards."

@@ -1,8 +1,11 @@
 import pytest
 import json
-from datetime import datetime
+import logging
+import threading
+import time
+from datetime import datetime, UTC
 from pathlib import Path
-from src.brainxio.utils.tasks import run_task, log_task
+from src.brainxio.utils.tasks import run_task, run_tasks_parallel, log_task
 from src.brainxio.errors import BrainXioError
 
 def test_run_task_success(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
@@ -95,12 +98,13 @@ def test_run_task_execution_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     task_dir.mkdir()
     task_file = task_dir / "test_task.py"
     task_file.write_text("def run(): raise ValueError('Task error')")
-    with pytest.raises(BrainXioError, match="Task execution failed: Task error"):
-        run_task(task_dir, "test_task")
+    with pytest.raises(BrainXioError, match="Task test_task failed after 2 attempts: Task error"):
+        run_task(task_dir, "test_task", max_retries=1)
     log_file = tmp_path / "logs" / "tasks.json"
     with log_file.open() as f:
         logs = json.load(f)
     assert any(log["task_name"] == "test_task" and log["status"] == "failed" and log["error"] == "Task error" for log in logs)
+    assert any(log["task_name"] == "test_task" and log["attempts"] == 2 for log in logs)
 
 def test_run_task_load_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test run_task raises error for task load failure."""
@@ -110,18 +114,89 @@ def test_run_task_load_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     task_file.write_text("def run(): pass")
     monkeypatch.setattr("importlib.util.spec_from_file_location", lambda name, path: None)
     with pytest.raises(BrainXioError, match="Failed to load task: test_task"):
-        run_task(task_dir, "test_task")
+        run_task(task_dir, "test_task", max_retries=1)
     log_file = tmp_path / "logs" / "tasks.json"
-    assert log_file.exists()  # Log created despite load error
+    assert log_file.exists()
+    with log_file.open() as f:
+        logs = json.load(f)
+    assert any(log["task_name"] == "test_task" and log["attempts"] == 2 for log in logs)
 
 def test_log_task_write_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
     """Test log_task handles write errors gracefully."""
     task_dir = tmp_path / "tasks"
     task_dir.mkdir()
-    task_log = {"task_name": "test_task", "status": "running", "start_time": datetime.utcnow().isoformat()}
+    task_log = {"task_name": "test_task", "status": "running", "start_time": datetime.now(UTC).isoformat()}
     def raise_oserror(*args, **kwargs):
         raise OSError("Write error")
     monkeypatch.setattr(Path, "open", raise_oserror)
     caplog.set_level(logging.WARNING)
     log_task(task_dir, task_log)
     assert "Failed to log task: Write error" in caplog.text
+
+def test_run_task_retry_success(tmp_path: Path, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test run_task retries and succeeds after initial failure."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    count_file = task_dir / "count.txt"
+    count_file.write_text("0")
+    task_file = task_dir / "test_task.py"
+    task_file.write_text(f"def run():\n    with open('{count_file}', 'r+') as f:\n        count = int(f.read())\n        count += 1\n        f.seek(0)\n        f.write(str(count))\n        if count < 2: raise ValueError('Retry error')\n        print('Task executed')")
+    run_task(task_dir, "test_task", max_retries=2)
+    captured = capsys.readouterr()
+    assert "Task executed" in captured.out
+    log_file = tmp_path / "logs" / "tasks.json"
+    assert log_file.exists()
+    with log_file.open() as f:
+        logs = json.load(f)
+    assert any(log["task_name"] == "test_task" and log["status"] == "completed" for log in logs)
+    assert any(log["task_name"] == "test_task" and log["attempts"] == 2 for log in logs)
+
+def test_run_task_timeout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test run_task raises error for timeout."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file = task_dir / "test_task.py"
+    task_file.write_text("import time\ndef run(): time.sleep(5)")
+    with pytest.raises(BrainXioError, match="Task test_task failed after 1 attempts: Task execution timed out"):
+        run_task(task_dir, "test_task", max_retries=0, timeout=1)
+    log_file = tmp_path / "logs" / "tasks.json"
+    assert log_file.exists()
+    with log_file.open() as f:
+        logs = json.load(f)
+    assert any(log["task_name"] == "test_task" and log["status"] == "failed" and log["error"] == "Task execution timed out" for log in logs)
+
+def test_run_tasks_parallel_success(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    """Test run_tasks_parallel executes tasks successfully."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("def run(): print('Task1 executed')")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("def run(): print('Task2 executed')")
+    run_tasks_parallel(task_dir, ["task1", "task2"], {}, max_retries=0, timeout=10)
+    captured = capsys.readouterr()
+    assert "Task1 executed" in captured.out
+    assert "Task2 executed" in captured.out
+    log_file = tmp_path / "logs" / "tasks.json"
+    assert log_file.exists()
+    with log_file.open() as f:
+        logs = json.load(f)
+    assert any(log["task_name"] == "task1" and log["status"] == "completed" for log in logs)
+    assert any(log["task_name"] == "task2" and log["status"] == "completed" for log in logs)
+
+def test_run_tasks_parallel_failure(tmp_path: Path) -> None:
+    """Test run_tasks_parallel raises error for task failure."""
+    task_dir = tmp_path / "tasks"
+    task_dir.mkdir()
+    task_file1 = task_dir / "task1.py"
+    task_file1.write_text("def run(): raise ValueError('Task1 error')")
+    task_file2 = task_dir / "task2.py"
+    task_file2.write_text("def run(): print('Task2 executed')")
+    with pytest.raises(BrainXioError, match="Task task1 failed to complete"):
+        run_tasks_parallel(task_dir, ["task1", "task2"], {}, max_retries=0, timeout=10)
+    log_file = tmp_path / "logs" / "tasks.json"
+    assert log_file.exists()
+    with log_file.open() as f:
+        logs = json.load(f)
+    assert any(log["task_name"] == "task1" and log["status"] == "failed" and log["error"] == "Task1 error" for log in logs)
+    assert any(log["task_name"] == "task2" and log["status"] == "completed" for log in logs)
