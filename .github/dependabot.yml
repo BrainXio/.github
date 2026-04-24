@@ -1,0 +1,85 @@
+# .github/dependabot.yml
+# Organization-wide Dependabot configuration
+# Automatically applies to all repos under brainxio that do NOT have their own dependabot.yml
+
+version: 2
+
+updates:
+  # GitHub Actions workflows & actions (updates action versions in .github/workflows/*.yml)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependabot"
+      - "github-actions"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # Node.js / npm (package.json + package-lock.json)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependabot"
+      - "npm"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    versioning-strategy: "increase"  # safe for most JS projects
+
+  # Python (pyproject.toml, requirements.txt, setup.py, poetry.lock, Pipfile)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependabot"
+      - "pip"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # Dev Containers (devcontainer.json)
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependabot"
+      - "devcontainers"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps-devcontainer)"
+      include: "scope"
+
+  # Dockerfiles (if any projects use Docker)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependabot"
+      - "docker"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps-docker)"
+      include: "scope"
+
+# Global ignore rules (optional — add if you want to skip noisy updates)
+ignore:
+  - dependency-name: "*"              # example: ignore everything (remove if unwanted)
+    update-types: ["version-update:semver-major"]  # only ignore major version bumps
+
+# Optional: auto-merge configuration (requires separate workflow or auto-merge bot)
+# You can add this later if you want Dependabot PRs to auto-merge after passing checks
