@@ -23,7 +23,7 @@ If you've ever felt the pull to dig deeper, to speak truth over comfort, to ques
 ---
 
 <p align="center">
-  <a href="https://github.com/brainxio/ocd"><strong>Explore ocd →</strong></a>
+  <a href="https://github.com/brainxio/obsessive-compulsive-driver"><strong>Explore ocd →</strong></a>
   &nbsp;·&nbsp;
   <a href="https://github.com/brainxio/.github/issues/new?template=bug_report.md">Report Bug</a>
   &nbsp;·&nbsp;
