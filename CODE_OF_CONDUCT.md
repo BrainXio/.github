@@ -9,6 +9,7 @@ We value curiosity over certainty, honesty over comfort, and support over contro
 ## Our Standards
 
 Examples of behavior that helps us grow:
+
 - Asking "why" with genuine interest
 - Giving and receiving feedback with kindness and clarity
 - Celebrating different perspectives and experiences
@@ -16,6 +17,7 @@ Examples of behavior that helps us grow:
 - Choosing empathy even when it's hard
 
 Examples of unacceptable behavior:
+
 - Harassment or personal attacks of any kind
 - Trolling, insults, or derision
 - Publishing private information without consent
@@ -25,7 +27,7 @@ Examples of unacceptable behavior:
 
 Community stewards will enforce this Code gently but firmly. Violations may lead to warnings, temporary bans, or permanent removal, depending on impact.
 
-Report issues privately to github@brainxio.org — we'll handle them respectfully and promptly.
+Report issues privately to <github@brainxio.org> — we'll handle them respectfully and promptly.
 
 ## Scope & Attribution
 
