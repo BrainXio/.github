@@ -11,8 +11,6 @@ It describes the expected environment layout, our documentation framework, worki
   &nbsp;·&nbsp;
   <a href="https://github.com/brainxio/tools">Tools</a>
   &nbsp;·&nbsp;
-  <a href="https://github.com/brainxio/.github/blob/main/AGENTS.md">Agent Guide</a>
-  &nbsp;·&nbsp;
   <a href="https://github.com/brainxio/.github/issues/new?template=bug_report.md">Report Bug</a>
   &nbsp;·&nbsp;
   <a href="https://github.com/brainxio/.github/issues/new?template=feature_request.md&labels=enhancement">Request Feature</a>
