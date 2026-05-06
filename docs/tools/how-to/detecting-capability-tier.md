@@ -6,7 +6,7 @@ Run this at the start of every session or before any high-impact task.
 uv run --directory .github/tools python detect_capability_tier.py
 ```
 
-**Example output**:
+**Example output:**
 
 ```json
 {

@@ -16,7 +16,6 @@ def detect_capability_tier() -> Dict[str, Any]:
     trainer_tier = "3"
 
     try:
-        # Simple GPU detection (nvidia-smi)
         result = subprocess.run(
             ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
             capture_output=True,
@@ -32,7 +31,7 @@ def detect_capability_tier() -> Dict[str, Any]:
                 worker_tier = "B"
                 trainer_tier = "2"
     except Exception:
-        pass  # No GPU or command not found → fall back to safe tier
+        pass
 
     return {
         "worker_tier": worker_tier,

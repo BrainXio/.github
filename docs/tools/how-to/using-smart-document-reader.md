@@ -23,5 +23,6 @@ uv run --directory .github/tools python smart_document_reader.py docs/reference/
 
 If the reader returns a `truncated` or `partial` result and the agent still cannot complete its task, it should escalate to a higher-tier agent or to the human (Core Role).
 
-**Example escalation message**:
+**Example escalation message:**
+
 > Task requires full `cpr-procedure.md` (est. 18k tokens). Current tier C limit reached. Requesting Tier B or human assistance.
