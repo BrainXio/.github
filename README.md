@@ -7,13 +7,11 @@ It describes the expected environment layout, our documentation framework, worki
 ---
 
 <p align="center">
-  <a href="https://github.com/brainxio/.github/tree/main/docs/tutorials">Tutorials</a>
+  <a href="https://github.com/brainxio/docs">Documentation</a>
   &nbsp;·&nbsp;
-  <a href="https://github.com/brainxio/.github/tree/main/docs/how-to">How-to Guides</a>
+  <a href="https://github.com/brainxio/tools">Tools</a>
   &nbsp;·&nbsp;
-  <a href="https://github.com/brainxio/.github/tree/main/docs/explanation">Explanation</a>
-  &nbsp;·&nbsp;
-  <a href="https://github.com/brainxio/.github/tree/main/docs/reference">Reference</a>
+  <a href="https://github.com/brainxio/.github/blob/main/AGENTS.md">Agent Guide</a>
   &nbsp;·&nbsp;
   <a href="https://github.com/brainxio/.github/issues/new?template=bug_report.md">Report Bug</a>
   &nbsp;·&nbsp;
@@ -44,44 +42,14 @@ We actively use three operating attitudes that adapt to both the human and the a
 
 These combine into clear states such as FreePro, ProMax, or MaxFree so everyone always knows the current operating boundaries. Fun is never optional — even clean professional work must stay **fun**ctional.
 
-## Our Documentation Framework (Diátaxis)
+## Related Repositories
 
-We organize all knowledge using the Diátaxis framework for maximum clarity and usability:
+| Repository | Purpose |
+| ---------- | ------- |
+| [brainxio/docs](https://github.com/brainxio/docs) | Diátaxis documentation framework (protocols, roles, rules, skills) |
+| [brainxio/tools](https://github.com/brainxio/tools) | Agent capability tools (bootstrap, tier detection, safe operations) |
 
-```bash
-.github/
-├── docs/
-│   ├── index.md
-│   ├── tutorials/                # Guided learning journeys
-│   │   ├── getting-started.md
-│   │   ├── first-sprint.md
-│   │   ├── setting-up-your-environment.md
-│   │   └── using-the-agents.md
-│   ├── how-to/                   # Practical step-by-step solutions
-│   │   ├── run-a-sprint.md
-│   │   ├── add-a-new-agent-role.md
-│   │   ├── configure-local-models.md
-│   │   ├── handle-subscription-limits.md
-│   │   └── contribute-to-the-project.md
-│   ├── explanation/              # Understanding the “why”
-│   │   ├── last-sprint-cpr-procedure.md
-│   │   ├── next-sprint-aed-utility.md
-│   │   ├── objective-pro-attitude.md
-│   │   ├── idiot-playground.md
-│   │   ├── neurodivergent-drivers.md
-│   │   └── sovereignty-and-local-first.md
-│   └── reference/                # Facts, specs, and quick lookups
-│       ├── roles-overview.md
-│       ├── acronyms-glossary.md
-│       ├── standards-and-rules.md
-│       ├── mcp-servers.md
-│       └── hardware-requirements.md
-├── README.md                     # This file – setup & overview
-└── profile/
-    └── README.md                 # Public welcome page
-```
-
-This structure keeps learning gentle, problem-solving fast, understanding deep, and reference quick.
+This repository contains org-level defaults and agent entry points only.
 
 ---
 
