@@ -32,13 +32,7 @@ Core expectations:
 - The `gh` CLI is the only allowed management interface for GitHub organisation resources
 - SSH keypairs and GPG keys for commits are managed exclusively through the `tools/` directory — agents never see or handle sensitive key material
 
-We actively use three operating attitudes that adapt to both the human and the available resources:
-
-- **F.R.E.E.** — our human mode: light, mindful, and always free
-- **P.R.O.** — our collaboration mode: balanced, professional, and realistic
-- **M.A.X.** — our exploration mode: deep, autonomous, and playful
-
-These combine into clear states such as FreePro, ProMax, or MaxFree so everyone always knows the current operating boundaries. Fun is never optional — even clean professional work must stay **fun**ctional.
+Our operating model adapts to the resources available — from lightweight hardware through cloud-assisted to full local autonomy — so everyone always knows the current operating boundaries. Fun is never optional — even clean professional work must stay **fun**ctional.
 
 ## Related Repositories
 

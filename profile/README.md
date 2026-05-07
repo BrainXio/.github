@@ -28,11 +28,7 @@ Welcome to BrainXio — a space where you can feel safe the moment you arrive, b
 
 This profile is the public face of the entire ecosystem. It carries our shared values and warm invitation for anyone curious about what we’re building.
 
-We blend human sovereignty with capable agents, local-first principles, and joyful experimentation. Our ways of working are guided by three clear attitudes that adapt to different situations and resources:
-
-- **F.R.E.E.** — our human mode: light, mindful, and always free
-- **P.R.O.** — our collaboration mode: balanced, professional, and realistic
-- **M.A.X.** — our exploration mode: deep, autonomous, and playful
+We blend human sovereignty with capable agents, local-first principles, and joyful experimentation. Our operating model adapts to the resources available — from lightweight hardware through cloud-assisted to full local autonomy — so everyone always knows the current operating boundaries.
 
 Fun is never optional. Even when we aim for clean, professional results, we still make sure they stay **fun**ctional.
 
