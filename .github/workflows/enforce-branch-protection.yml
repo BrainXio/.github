@@ -1,0 +1,112 @@
+name: Enforce Branch Protection
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repository to protect (format: owner/repo)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  enforce-branch-protection:
+    name: Enforce Branch Protection
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Verify gh CLI is available
+        run: |
+          if ! command -v gh &> /dev/null; then
+            echo "ERROR: gh CLI is not installed or not in PATH"
+            exit 1
+          fi
+          gh --version
+
+      - name: Set repository environment variables
+        shell: bash
+        env:
+          REPO_INPUT: ${{ inputs.repo }}
+          FALLBACK_REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$REPO_INPUT" ]; then
+            REPO="$FALLBACK_REPO"
+          else
+            REPO="$REPO_INPUT"
+          fi
+          echo "REPO=$REPO" >> "$GITHUB_ENV"
+          echo "REPO_OWNER=$(echo "$REPO" | cut -d'/' -f1)" >> "$GITHUB_ENV"
+          echo "REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)" >> "$GITHUB_ENV"
+
+      - name: Validate repository input
+        shell: bash
+        env:
+          REPO: ${{ env.REPO }}
+        run: |
+          if ! echo "$REPO" | grep -qE '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'; then
+            echo "ERROR: Invalid repository format. Expected format: owner/repo"
+            exit 1
+          fi
+          echo "Validated repository: $REPO"
+
+      - name: Check existing branch protection
+        id: check_protection
+        shell: bash
+        env:
+          REPO_OWNER: ${{ env.REPO_OWNER }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+        run: |
+          echo "Checking existing branch protection for $REPO_OWNER/$REPO_NAME..."
+          if gh api "repos/$REPO_OWNER/$REPO_NAME/branches/main/protection" &>/dev/null; then
+            echo "EXISTS=true" >> "$GITHUB_ENV"
+          else
+            echo "EXISTS=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Apply branch protection
+        if: env.EXISTS == 'false'
+        shell: bash
+        env:
+          REPO_OWNER: ${{ env.REPO_OWNER }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+        run: |
+          gh api "repos/$REPO_OWNER/$REPO_NAME/branches/main/protection" \
+            -X PUT \
+            -f required_status_checks='{"strict":true,"contexts":["Starter Checks","Self CI"]}' \
+            -f enforce_admins=true \
+            -f required_pull_request_reviews='{"dismiss_stale_reviews":true,"require_code_owner_reviews":true,"required_approving_review_count":1}' \
+            -f restrictions=null \
+            -f allow_force_pushes=false \
+            -f allow_deletions=false \
+            -f required_conversation_resolution=true \
+            -f lock_branch=false
+          echo "Branch protection applied successfully."
+
+      - name: Verify branch protection settings
+        shell: bash
+        env:
+          REPO_OWNER: ${{ env.REPO_OWNER }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+        run: |
+          PROTECTION=$(gh api "repos/$REPO_OWNER/$REPO_NAME/branches/main/protection")
+          echo "Current branch protection settings:"
+          echo "$PROTECTION" | jq .
+
+      - name: Report completion
+        shell: bash
+        env:
+          REPO: ${{ env.REPO }}
+          EXISTS: ${{ env.EXISTS }}
+        run: |
+          if [ "$EXISTS" = "true" ]; then
+            echo "No changes needed - branch protection already exists with required settings."
+          else
+            echo "Branch protection successfully enforced on main branch of $REPO."
+          fi
