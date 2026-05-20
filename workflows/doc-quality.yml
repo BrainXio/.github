@@ -40,7 +40,7 @@ permissions:
 jobs:
   doc-lint:
     name: Lint and Format Check
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -67,7 +67,7 @@ jobs:
   typos:
     name: Spell Check
     if: ${{ inputs.typos-config != '' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -80,7 +80,7 @@ jobs:
   link-check:
     name: Link Check
     if: ${{ inputs.link-check-paths != '' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     continue-on-error: ${{ !inputs.link-check-fail }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6

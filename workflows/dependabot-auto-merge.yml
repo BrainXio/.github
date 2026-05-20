@@ -18,7 +18,7 @@ jobs:
   dependabot-auto-merge:
     name: Auto-merge low-risk updates
     if: ${{ github.triggering_actor == 'dependabot[bot]' }}  # zizmor: ignore[bot-conditions] — triggering_actor is non-spoofable
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write

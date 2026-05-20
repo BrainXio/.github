@@ -58,3 +58,7 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for commit style, PR requirements, and local setup.
+
+## Maintenance
+
+This repo is maintained by `@brainxio/core`. PRs from org members are welcome — the stricter standards exist precisely because this repo affects every other repository in the organization.

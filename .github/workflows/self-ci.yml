@@ -15,7 +15,7 @@ permissions:
 jobs:
   validate-workflows:
     name: Validate Workflow Syntax
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -66,7 +66,7 @@ jobs:
 
   test-ci-python-synthetic:
     name: Synthetic Python CI Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -174,7 +174,7 @@ jobs:
 
   test-ci-typescript-synthetic:
     name: Synthetic TypeScript CI Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -280,7 +280,7 @@ jobs:
 
   test-ci-go-synthetic:
     name: Synthetic Go CI Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -369,7 +369,7 @@ jobs:
 
   test-ci-rust-synthetic:
     name: Synthetic Rust CI Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -436,7 +436,7 @@ jobs:
 
   consumer-simulation:
     name: Consumer Repo Simulation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
