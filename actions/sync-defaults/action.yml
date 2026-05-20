@@ -1,0 +1,142 @@
+name: Sync Defaults
+description: Sync configuration files from a defaults/ directory to a consumer repo
+
+inputs:
+  source-dir:
+    description: Directory containing default config files in the calling repo
+    required: true
+    default: defaults
+  target-dir:
+    description: Target directory in consumer repo where files are copied
+    required: true
+    default: .
+  file-patterns:
+    description: Space-separated glob patterns of files to sync
+    required: true
+    default: "*"
+  commit-message:
+    description: Commit message for sync commits
+    required: true
+    default: "chore: sync default configs"
+  dry-run:
+    description: Show what would change without committing
+    required: true
+    default: "false"
+  fail-on-drift:
+    description: Fail workflow when drift is detected (don't auto-sync)
+    required: true
+    default: "false"
+
+outputs:
+  changed-files:
+    description: List of files that were or would be changed
+    value: ${{ steps.sync.outputs.changed-files }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout calling repo
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          ${{ inputs.source-dir }}
+        sparse-checkout-cone-mode: false
+
+    - id: sync
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.source-dir }}
+        TARGET_DIR: ${{ inputs.target-dir }}
+        FILE_PATTERNS: ${{ inputs.file-patterns }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        DRY_RUN: ${{ inputs.dry-run }}
+        FAIL_ON_DRIFT: ${{ inputs.fail-on-drift }}
+      run: |
+        set -euo pipefail
+
+        cd "$GITHUB_WORKSPACE/${{ inputs.source-dir }}"
+        TARGET="$GITHUB_WORKSPACE/$TARGET_DIR"
+
+        declare -a DRIFTED_FILES=()
+        declare -a ALL_PATTERNS=()
+
+        for pattern in $FILE_PATTERNS; do
+          while IFS= read -r -d '' file; do
+            ALL_PATTERNS+=("$file")
+          done < <(find . -type f -name "$pattern" -print0 2>/dev/null)
+        done
+
+        if [[ ${#ALL_PATTERNS[@]} -eq 0 ]]; then
+          echo "changed-files=" >> "$GITHUB_OUTPUT"
+          echo "No files found matching patterns: $FILE_PATTERNS"
+          exit 0
+        fi
+
+        for source_file in "${ALL_PATTERNS[@]}"; do
+          rel_path="${source_file#./}"
+          target_file="$TARGET/$rel_path"
+
+          if [[ -f "$target_file" ]]; then
+            if ! diff -q "$source_file" "$target_file" > /dev/null 2>&1; then
+              DRIFTED_FILES+=("$rel_path")
+            fi
+          else
+            DRIFTED_FILES+=("$rel_path")
+          fi
+        done
+
+        if [[ ${#DRIFTED_FILES[@]} -eq 0 ]]; then
+          echo "changed-files=" >> "$GITHUB_OUTPUT"
+          echo "No drift detected"
+          exit 0
+        fi
+
+        echo "changed-files=${DRIFTED_FILES[*]}" >> "$GITHUB_OUTPUT"
+
+        if [[ "$DRY_RUN" == "true" ]]; then
+          echo "Dry-run: would sync ${#DRIFTED_FILES[@]} file(s):"
+          for f in "${DRIFTED_FILES[@]}"; do
+            echo "  - $f"
+          done
+          exit 0
+        fi
+
+        if [[ "$FAIL_ON_DRIFT" == "true" ]]; then
+          echo "Drift detected in ${#DRIFTED_FILES[@]} file(s):"
+          for f in "${DRIFTED_FILES[@]}"; do
+            echo "  - $f"
+          done
+          echo "::error::Drift detected. Set fail-on-drift to false to auto-sync."
+          exit 1
+        fi
+
+        echo "Syncing ${#DRIFTED_FILES[@]} file(s):"
+        for source_file in "${ALL_PATTERNS[@]}"; do
+          rel_path="${source_file#./}"
+          target_file="$TARGET/$rel_path"
+
+          if [[ -f "$target_file" ]]; then
+            if diff -q "$source_file" "$target_file" > /dev/null 2>&1; then
+              continue
+            fi
+          fi
+
+          mkdir -p "$(dirname "$target_file")"
+          cp "$source_file" "$target_file"
+          echo "  synced: $rel_path"
+        done
+
+        if [[ "$GITHUB_REF" != "refs/heads/main" ]] && [[ "$GITHUB_REF" != "refs/heads/master" ]]; then
+          echo "Not on main branch, skipping commit"
+          exit 0
+        fi
+
+        git config --global --add safe.directory "$TARGET"
+        cd "$TARGET"
+        git add .
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        git commit -m "$COMMIT_MESSAGE"
+        echo "Committed with message: $COMMIT_MESSAGE"
