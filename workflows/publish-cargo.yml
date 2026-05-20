@@ -27,12 +27,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # stable
+      - uses: ./.github/actions/setup-rust-deps
         with:
           toolchain: ${{ inputs.toolchain }}
           components: clippy, rustfmt
-
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
 
       - name: Publish crate
         # zizmor: ignore[use-trusted-publishing] — cargo publish requires registry token; trusted publishing not supported by crates.io
