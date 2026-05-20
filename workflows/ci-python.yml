@@ -62,13 +62,10 @@ jobs:
     name: Lint and Format
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-python-deps@v1
-        with:
-          python-version: ${{ inputs.python-version }}
+          language: python
+          version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
 
       - name: Validate paths
@@ -94,24 +91,12 @@ jobs:
     name: Type Check
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-python-deps@v1
-        with:
-          python-version: ${{ inputs.python-version }}
+          language: python
+          version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
 
-      # -------------------------------------------------------------------------
-      # Determine mypy target
-      # -------------------------------------------------------------------------
-      # Contract:
-      #   1. MYPY_TARGET_INPUT set  → validate regex, use directly.
-      #   2. SRC_PATH="src" exists  → auto-detect single package under src/;
-      #      fail if 0 or 2+ packages found (ambiguous).
-      #   3. Custom SRC_PATH        → use SRC_PATH as-is (do NOT append basename).
-      # -------------------------------------------------------------------------
       - name: Determine mypy target
         id: mypy-target
         shell: bash
@@ -125,18 +110,7 @@ jobs:
               exit 1
             fi
             echo "target=$MYPY_TARGET_INPUT" >> "$GITHUB_OUTPUT"
-          elif [ "$SRC_PATH" = "src" ] && [ -d "src" ]; then
-            # Count packages under src/ (directories with __init__.py at depth 2)
-            count=$(find src/ -maxdepth 2 -name "__init__.py" -exec dirname {} \; 2>/dev/null | sort -u | wc -l)
-            if [ "$count" -eq 1 ]; then
-              pkg=$(find src/ -maxdepth 2 -name "__init__.py" -exec dirname {} \; 2>/dev/null | sort -u | head -1 | sed 's|^src/||' | tr '-' '_')
-              echo "target=src/$pkg" >> "$GITHUB_OUTPUT"
-            else
-              echo "Cannot auto-detect mypy target: found $count packages under src/. Set mypy-target input explicitly." >&2
-              exit 1
-            fi
           else
-            # Custom SRC_PATH — use it directly as the mypy target path
             echo "target=$SRC_PATH" >> "$GITHUB_OUTPUT"
           fi
 
@@ -150,13 +124,10 @@ jobs:
     name: Test and Coverage
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-python-deps@v1
-        with:
-          python-version: ${{ inputs.python-version }}
+          language: python
+          version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
 
       - name: Run tests with coverage
@@ -175,94 +146,32 @@ jobs:
     name: Build Verify
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-python-deps@v1
-        with:
-          python-version: ${{ inputs.python-version }}
+          language: python
+          version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
 
       - run: uv run python -m build
 
-      - name: Verify wheel entry points
+      - uses: brainxio/.github/actions/verify-wheel-entrypoints@v1
         if: ${{ inputs.wheel-entry-points != '' }}
-        shell: bash
-        env:
-          ENTRY_POINTS: ${{ inputs.wheel-entry-points }}
-        run: |
-          python3 -c "
-          import configparser, glob, os, sys, zipfile
-
-          entry_points = os.environ['ENTRY_POINTS'].split()
-          if not entry_points:
-              print('ERROR: no entry point names provided')
-              sys.exit(1)
-
-          wheel_dir = 'dist'
-          wheels = sorted(glob.glob(os.path.join(wheel_dir, '*.whl')))
-          if not wheels:
-              print(f'ERROR: no .whl found in {wheel_dir}/')
-              sys.exit(1)
-
-          wheel = wheels[-1]
-          with zipfile.ZipFile(wheel) as z:
-              ep_path = next(
-                  (n for n in z.namelist() if n.endswith('.dist-info/entry_points.txt')),
-                  None
-              )
-              if not ep_path:
-                  print(f'ERROR: no entry_points.txt in {wheel}')
-                  sys.exit(1)
-              ep_content = z.read(ep_path).decode('utf-8')
-
-          cp = configparser.ConfigParser()
-          cp.read_string(ep_content)
-          found = set()
-          for section in cp.sections():
-              found.update(cp.options(section))
-
-          missing = [ep for ep in entry_points if ep not in found]
-          if missing:
-              print(f'ERROR: missing entry points in {wheel}: {missing}')
-              print(f'Found: {sorted(found)}')
-              sys.exit(1)
-
-          print(f'Verified {len(entry_points)} entry point(s) in {os.path.basename(wheel)}')
-          "
+        with:
+          wheel-dir: dist
+          entry-points: ${{ inputs.wheel-entry-points }}
 
   mcp-integration:
     name: MCP Server Integration
     if: ${{ inputs.run-mcp-integration }}
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-python-deps@v1
-        with:
-          python-version: ${{ inputs.python-version }}
+          language: python
+          version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
 
-      - name: Run MCP integration tests
-        shell: bash
-        env:
-          MCP_ENV_VARS: ${{ inputs.mcp-env-vars }}
-          MCP_TEST_PATH: ${{ inputs.mcp-test-path }}
-        run: |
-          if [ -n "$MCP_ENV_VARS" ]; then
-            while IFS='=' read -r key value; do
-              # Trim whitespace — pure bash, no xargs
-              key="${key#"${key%%[![:space:]]*}"}"
-              key="${key%"${key##*[![:space:]]}"}"
-              if [[ ! "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-                echo "ERROR: invalid env var name: $key" >&2
-                exit 1
-              fi
-              export "$key=$value"
-            done <<< "$MCP_ENV_VARS"
-          fi
-          [[ "$MCP_TEST_PATH" =~ ^[a-zA-Z0-9_/.-]+$ ]] || { echo "ERROR: invalid test path" >&2; exit 1; }
-          uv run pytest "$MCP_TEST_PATH"/ -v
+      - uses: brainxio/.github/actions/run-mcp-tests@v1
+        with:
+          mcp-env-vars: ${{ inputs.mcp-env-vars }}
+          mcp-test-path: ${{ inputs.mcp-test-path }}
