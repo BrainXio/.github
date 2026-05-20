@@ -51,9 +51,6 @@ on:
         type: string
         default: ""
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026
-
 permissions:
   contents: read
 
@@ -154,11 +151,39 @@ jobs:
 
       - run: uv run python -m build
 
-      - uses: brainxio/.github/actions/verify-wheel-entrypoints@v1
+      - name: Verify wheel entry points
         if: ${{ inputs.wheel-entry-points != '' }}
-        with:
-          wheel-dir: dist
-          entry-points: ${{ inputs.wheel-entry-points }}
+        shell: bash
+        env:
+          ENTRY_POINTS: ${{ inputs.wheel-entry-points }}
+        run: |
+          python3 -c "
+          import configparser, glob, os, sys, zipfile
+          entry_points = os.environ['ENTRY_POINTS'].split()
+          if not entry_points:
+              print('ERROR: no entry point names provided')
+              sys.exit(1)
+          wheels = sorted(glob.glob('dist/*.whl'))
+          if not wheels:
+              print('ERROR: no .whl found in dist/')
+              sys.exit(1)
+          wheel = wheels[-1]
+          with zipfile.ZipFile(wheel) as z:
+              ep_path = next((n for n in z.namelist() if n.endswith('.dist-info/entry_points.txt')), None)
+              if not ep_path:
+                  print(f'ERROR: no entry_points.txt in {wheel}')
+                  sys.exit(1)
+              ep_content = z.read(ep_path).decode('utf-8')
+          cp = configparser.ConfigParser()
+          cp.read_string(ep_content)
+          found = {o for s in cp.sections() for o in cp.options(s)}
+          missing = [ep for ep in entry_points if ep not in found]
+          if missing:
+              print(f'ERROR: missing entry points in {wheel}: {missing}')
+              print(f'Found: {sorted(found)}')
+              sys.exit(1)
+          print(f'Verified {len(entry_points)} entry point(s) in {os.path.basename(wheel)}')
+          "
 
   mcp-integration:
     name: MCP Server Integration
@@ -171,7 +196,22 @@ jobs:
           version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
 
-      - uses: brainxio/.github/actions/run-mcp-tests@v1
-        with:
-          mcp-env-vars: ${{ inputs.mcp-env-vars }}
-          mcp-test-path: ${{ inputs.mcp-test-path }}
+      - name: Run MCP integration tests
+        shell: bash
+        env:
+          MCP_ENV_VARS: ${{ inputs.mcp-env-vars }}
+          MCP_TEST_PATH: ${{ inputs.mcp-test-path }}
+        run: |
+          if [ -n "$MCP_ENV_VARS" ]; then
+            while IFS='=' read -r key value; do
+              key="${key#"${key%%[![:space:]]*}"}"
+              key="${key%"${key##*[![:space:]]}"}"
+              if [[ ! "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+                echo "ERROR: invalid env var name: $key" >&2
+                exit 1
+              fi
+              export "$key=$value"
+            done <<< "$MCP_ENV_VARS"
+          fi
+          [[ "$MCP_TEST_PATH" =~ ^[a-zA-Z0-9_/.-]+$ ]] || { echo "ERROR: invalid test path" >&2; exit 1; }
+          uv run pytest "$MCP_TEST_PATH"/ -v
