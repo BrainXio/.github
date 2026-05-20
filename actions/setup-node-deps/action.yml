@@ -42,6 +42,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: ${{ inputs.package-manager }}
         cache-dependency-path: '**/package-lock.json'
+        # restore-keys are handled automatically by setup-node
         registry-url: ${{ inputs.registry-url }}
         scope: ${{ inputs.scope }}
 

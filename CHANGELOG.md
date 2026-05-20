@@ -22,6 +22,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fail on deprecated `actions/cache@v[0-3]` usage
   - Fail on relative action paths (`./.github/actions/`) in consumer workflows
 
+## [1.0.2] — 2026-05-20
+
+### Fixed
+
+- Moved cache version and absolute action path enforcement from consumer `workflows/self-ci.yml` to `.github/workflows/self-ci.yml` (the one that actually runs on this repository).
+
+### Added
+
+- `restore-keys` fallback to `actions/setup-rust-deps/action.yml` (`Swatinem/rust-cache@v2`).
+- `cache-dependency-path` to `actions/setup-node-deps/action.yml` for monorepo lockfile detection.
+- Cache restore-key comments to `actions/setup-python-deps/action.yml` and `actions/setup-go-deps/action.yml` (built-in cache handles this automatically).
+- `.github/workflows/cache-hygiene.yml` — weekly cron job that alerts on cache maintenance (GitHub 10 GB limit).
+
 ## [1.0.0] — 2026-05-20
 
 ### Added
