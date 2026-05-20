@@ -503,8 +503,8 @@ jobs:
           PYEOF
 
           # ── Copy reusable workflow + action ───────────────────────────
-          cp .github/workflows/ci-python.yml "$ROOT/.github/workflows/ci-python.yml"
-          cp .github/actions/setup-python-deps/action.yml \
+          cp workflows/ci-python.yml "$ROOT/.github/workflows/ci-python.yml"
+          cp actions/setup-python-deps/action.yml \
              "$ROOT/.github/actions/setup-python-deps/action.yml"
 
           # ── Consumer ci.yml — calls ./ workflows exactly as consumer would ─
@@ -634,8 +634,8 @@ jobs:
           EOF
 
           # ── Copy reusable workflow + action ───────────────────────────
-          cp .github/workflows/ci-typescript.yml "$ROOT/.github/workflows/ci-typescript.yml"
-          cp .github/actions/setup-node-deps/action.yml \
+          cp workflows/ci-typescript.yml "$ROOT/.github/workflows/ci-typescript.yml"
+          cp actions/setup-node-deps/action.yml \
              "$ROOT/.github/actions/setup-node-deps/action.yml"
 
           # ── Consumer ci.yml ─────────────────────────────────────────────
