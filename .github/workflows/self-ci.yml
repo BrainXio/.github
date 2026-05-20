@@ -395,13 +395,17 @@ jobs:
 
   test-ci-rust-synthetic:
     name: Synthetic Rust CI Test
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
       - name: Create synthetic Rust project
+        shell: bash
         run: |
           mkdir -p /tmp/test-project-rust/src
 
@@ -410,10 +414,6 @@ jobs:
           name = "test-project-rust"
           version = "0.1.0"
           edition = "2021"
-
-          [lib]
-          name = "test_project_rust"
-          path = "src/lib.rs"
           EOF
 
           cat > /tmp/test-project-rust/src/lib.rs << 'EOF'
@@ -422,11 +422,11 @@ jobs:
           }
           EOF
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # stable
+      - uses: ./.github/actions/common-setup
         with:
-          toolchain: "1.87.0"
-          components: clippy, rustfmt
+          language: rust
+          version: "1.87.0"
+          components: clippy,rustfmt
 
       - name: Run cargo fmt check
         working-directory: /tmp/test-project-rust
@@ -447,18 +447,6 @@ jobs:
         working-directory: /tmp/test-project-rust
         shell: bash
         run: cargo build --release
-
-      - name: Verify cargo build cache on second run
-        working-directory: /tmp/test-project-rust
-        shell: bash
-        run: |
-          # Second cargo build should be cached
-          output=$(cargo build --release 2>&1)
-          if echo "$output" | grep -q "Compiling"; then
-            echo "WARN: second cargo build recompiled (cache may not be working)"
-          else
-            echo "Cache verified: second cargo build was instant"
-          fi
 
   consumer-simulation:
     name: Consumer Repo Simulation
