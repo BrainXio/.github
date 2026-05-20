@@ -76,10 +76,5 @@ updates:
       prefix: "chore(deps-docker)"
       include: "scope"
 
-# Global ignore rules (optional — add if you want to skip noisy updates)
-ignore:
-  - dependency-name: "*"              # example: ignore everything (remove if unwanted)
-    update-types: ["version-update:semver-major"]  # only ignore major version bumps
-
-# Optional: auto-merge configuration (requires separate workflow or auto-merge bot)
-# You can add this later if you want Dependabot PRs to auto-merge after passing checks
+# Major version updates are handled individually per-package.
+# Removing the blanket ignore — major bumps may contain security fixes.

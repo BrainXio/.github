@@ -1,0 +1,12 @@
+# CODEOWNERS — BrainXio .github
+# Review requests are routed to the core team.
+
+# Default owners for everything in the repo
+* @brainxio/core
+
+# Workflow changes require core review
+/.github/workflows/ @brainxio/core
+
+# Org-wide defaults and config
+/defaults/ @brainxio/core
+/dependabot.yml @brainxio/core
