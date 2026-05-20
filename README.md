@@ -36,10 +36,13 @@ See [workflows/CONSUMER.md](workflows/CONSUMER.md) for the complete list of work
 
 ## Self-Only Workflows
 
-The following workflows are internal to `brainxio/.github` and are **not** published for consumer use:
+The following workflows in `.github/workflows/` are internal to this repo only and are **not** part of the public consumer contract:
 
-- `enforce-branch-protection.yml` — protects `main` on this repo only
-- `cache-hygiene.yml` — monitors cache usage on this repo only
+- `enforce-branch-protection.yml` — protects `main` on this repo
+- `cache-hygiene.yml` — monitors cache usage on this repo
+- `self-ci.yml` — validates this repo's own workflows and actions
+
+For the list of workflows that **are** safe to call from other repos, see [workflows/CONSUMER.md](workflows/CONSUMER.md).
 
 ## Updating the v1 Floating Tag
 
