@@ -37,7 +37,7 @@ jobs:
 
       - name: Print runner info
         shell: bash
-        run: echo "Runner OK: $(uname -a)"
+        run: 'echo "Runner OK: $(uname -a)"'
 
   validate-workflows:
     name: Validate Workflow Syntax
