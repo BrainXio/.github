@@ -46,60 +46,58 @@ jobs:
     name: Lint and Format
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-node-deps@v1
-        with:
-          node-version: ${{ inputs.node-version }}
+          language: node
+          version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
-          script: ${{ inputs.lint-script }}
 
-      - uses: brainxio/.github/actions/setup-node-deps@v1
-        with:
-          node-version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
-          script: ${{ inputs.format-script }}
+      - name: Run lint
+        shell: bash
+        run: ${{ inputs.package-manager }} run ${{ inputs.lint-script }}
+
+      - name: Run format check
+        shell: bash
+        run: ${{ inputs.package-manager }} run ${{ inputs.format-script }}
 
   typecheck:
     name: Type Check
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-node-deps@v1
-        with:
-          node-version: ${{ inputs.node-version }}
+          language: node
+          version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
-          script: ${{ inputs.typecheck-script }}
+
+      - name: Run typecheck
+        shell: bash
+        run: ${{ inputs.package-manager }} run ${{ inputs.typecheck-script }}
 
   test:
     name: Test
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-node-deps@v1
-        with:
-          node-version: ${{ inputs.node-version }}
+          language: node
+          version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
-          script: ${{ inputs.test-script }}
+
+      - name: Run tests
+        shell: bash
+        run: ${{ inputs.package-manager }} run ${{ inputs.test-script }}
 
   build:
     name: Build
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-node-deps@v1
-        with:
-          node-version: ${{ inputs.node-version }}
+          language: node
+          version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
-          script: ${{ inputs.build-script }}
+
+      - name: Run build
+        shell: bash
+        run: ${{ inputs.package-manager }} run ${{ inputs.build-script }}

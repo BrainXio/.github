@@ -30,12 +30,10 @@ jobs:
     name: Format Check
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-rust-deps@v1
-        with:
+          language: rust
+          version: ${{ inputs.toolchain }}
           toolchain: ${{ inputs.toolchain }}
 
       - run: cargo fmt --all -- --check
@@ -44,12 +42,10 @@ jobs:
     name: Clippy Lints
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-rust-deps@v1
-        with:
+          language: rust
+          version: ${{ inputs.toolchain }}
           toolchain: ${{ inputs.toolchain }}
 
       - name: Run clippy
@@ -71,12 +67,10 @@ jobs:
     name: Test
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-rust-deps@v1
-        with:
+          language: rust
+          version: ${{ inputs.toolchain }}
           toolchain: ${{ inputs.toolchain }}
 
       - run: cargo test
@@ -85,12 +79,10 @@ jobs:
     name: Build Release
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-rust-deps@v1
-        with:
+          language: rust
+          version: ${{ inputs.toolchain }}
           toolchain: ${{ inputs.toolchain }}
 
       - run: cargo build --release
@@ -100,12 +92,10 @@ jobs:
     if: ${{ inputs.run-audit }}
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: brainxio/.github/actions/common-setup@v1
         with:
-          persist-credentials: false
-
-      - uses: brainxio/.github/actions/setup-rust-deps@v1
-        with:
+          language: rust
+          version: ${{ inputs.toolchain }}
           toolchain: ${{ inputs.toolchain }}
 
       - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998 # v2.0.0
