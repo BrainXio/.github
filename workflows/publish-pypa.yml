@@ -19,9 +19,6 @@ on:
         description: "PyPI API token. Required for pypi.org or test.pypi.org. Omit for GitHub Packages."
         required: false
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026
-
 jobs:
   publish:
     name: Build and Publish

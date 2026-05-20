@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026
-
 permissions:
   contents: read
 
@@ -92,7 +89,10 @@ jobs:
 
   test-ci-python-synthetic:
     name: Synthetic Python CI Test
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:

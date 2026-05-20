@@ -11,9 +11,6 @@ on:
         type: boolean
         default: true
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026
-
 permissions:
   contents: read
 
