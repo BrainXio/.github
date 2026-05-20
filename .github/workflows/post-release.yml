@@ -1,0 +1,30 @@
+name: Post Release — Update v1 Floating Tag
+
+on:
+  push:
+    tags:
+      - 'v1.0.*'
+
+permissions:
+  contents: write
+
+jobs:
+  update-v1-tag:
+    name: Update v1 floating tag
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Update v1 floating tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -fa v1 -m "v1 floating tag → $(echo ${{ github.ref }} | sed 's|refs/tags/||')"
+          git push -f origin v1
