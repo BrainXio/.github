@@ -1,0 +1,49 @@
+name: Self CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  zizmor:
+    name: Run zizmor
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Install zizmor
+        shell: bash
+        run: pip install zizmor
+
+      - name: Run zizmor
+        shell: bash
+        run: |
+          set -o pipefail
+          zizmor --format plain .github/workflows/*.yml
+        env:
+          ZIZ MOR_EXIT_FAIL: "true"
+
+  actionlint:
+    name: Run actionlint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Install actionlint
+        shell: bash
+        run: go install github.com/rhysd/actionlint/cmd/actionlint@latest
+
+      - name: Run actionlint
+        shell: bash
+        run: |
+          set -o pipefail
+          actionlint -color always .github/workflows/*.yml

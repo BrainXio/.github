@@ -92,11 +92,13 @@ on: push
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - name: Validate workflows
-        uses: ./.github/.defaults/self-ci.yml
+        uses: BrainXio/workflows/.github/workflows/self-ci.yml@v1
 ```
 
 ### Test Composite Actions
@@ -108,10 +110,9 @@ Example — call `ci-python.yml` from a consumer repo:
 ```yaml
 jobs:
   test:
-    uses: BrainXio/.github/.github/workflows/ci-python.yml@v1
+    uses: BrainXio/workflows/.github/workflows/ci-python.yml@v1
     with:
       python-version: "3.12"
-     uv-lock: true
 ```
 
 ---
@@ -140,10 +141,9 @@ Consumer repos call workflows via `uses:` with a version tag. Pin to a tag (e.g.
 ```yaml
 jobs:
   test:
-    uses: BrainXio/.github/.github/workflows/ci-python.yml@v1
+    uses: BrainXio/workflows/.github/workflows/ci-python.yml@v1
     with:
       python-version: "3.12"
-      uv-lock: true
 ```
 
 ### ci-typescript.yml
@@ -151,7 +151,7 @@ jobs:
 ```yaml
 jobs:
   test:
-    uses: BrainXio/.github/.github/workflows/ci-typescript.yml@v1
+    uses: BrainXio/workflows/.github/workflows/ci-typescript.yml@v1
     with:
       node-version: "20"
 ```
@@ -161,7 +161,7 @@ jobs:
 ```yaml
 jobs:
   test:
-    uses: BrainXio/.github/.github/workflows/ci-go.yml@v1
+    uses: BrainXio/workflows/.github/workflows/ci-go.yml@v1
     with:
       go-version: "1.22"
 ```
@@ -171,7 +171,7 @@ jobs:
 ```yaml
 jobs:
   housekeeping:
-    uses: BrainXio/.github/.github/workflows/pr-stale.yml@v1
+    uses: BrainXio/workflows/.github/workflows/pr-stale.yml@v1
     with:
       days-before-stale: 30
       days-before-close: 7
