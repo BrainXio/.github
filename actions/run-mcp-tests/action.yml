@@ -1,0 +1,35 @@
+name: 'Run MCP Integration Tests'
+description: 'Run MCP server integration tests with optional environment variables'
+
+inputs:
+  mcp-env-vars:
+    description: 'Extra env vars for MCP tests (KEY=VALUE per line)'
+    required: false
+    default: ''
+  mcp-test-path:
+    description: 'Path for MCP integration tests'
+    required: false
+    default: 'tests/mcp'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run MCP integration tests
+      shell: bash
+      env:
+        MCP_ENV_VARS: ${{ inputs.mcp-env-vars }}
+        MCP_TEST_PATH: ${{ inputs.mcp-test-path }}
+      run: |
+        if [ -n "$MCP_ENV_VARS" ]; then
+          while IFS='=' read -r key value; do
+            key="${key#"${key%%[![:space:]]*}"}"
+            key="${key%"${key##*[![:space:]]}"}"
+            if [[ ! "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+              echo "ERROR: invalid env var name: $key" >&2
+              exit 1
+            fi
+            export "$key=$value"
+          done <<< "$MCP_ENV_VARS"
+        fi
+        [[ "$MCP_TEST_PATH" =~ ^[a-zA-Z0-9_/.-]+$ ]] || { echo "ERROR: invalid test path" >&2; exit 1; }
+        uv run pytest "$MCP_TEST_PATH"/ -v

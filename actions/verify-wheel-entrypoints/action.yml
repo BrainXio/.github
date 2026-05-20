@@ -1,0 +1,60 @@
+name: 'Verify Wheel Entry Points'
+description: 'Verify that expected entry points exist in a built wheel'
+
+inputs:
+  wheel-dir:
+    description: 'Directory containing .whl files'
+    required: false
+    default: 'dist'
+  entry-points:
+    description: 'Expected entry point names (space-separated)'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Verify wheel entry points
+      shell: bash
+      env:
+        WHEEL_DIR: ${{ inputs.wheel-dir }}
+        ENTRY_POINTS: ${{ inputs.entry-points }}
+      run: |
+        python3 -c "
+        import configparser, glob, os, sys, zipfile
+
+        entry_points = os.environ['ENTRY_POINTS'].split()
+        if not entry_points:
+            print('ERROR: no entry point names provided')
+            sys.exit(1)
+
+        wheel_dir = os.environ['WHEEL_DIR']
+        wheels = sorted(glob.glob(os.path.join(wheel_dir, '*.whl')))
+        if not wheels:
+            print(f'ERROR: no .whl found in {wheel_dir}/')
+            sys.exit(1)
+
+        wheel = wheels[-1]
+        with zipfile.ZipFile(wheel) as z:
+            ep_path = next(
+                (n for n in z.namelist() if n.endswith('.dist-info/entry_points.txt')),
+                None
+            )
+            if not ep_path:
+                print(f'ERROR: no entry_points.txt in {wheel}')
+                sys.exit(1)
+            ep_content = z.read(ep_path).decode('utf-8')
+
+        cp = configparser.ConfigParser()
+        cp.read_string(ep_content)
+        found = set()
+        for section in cp.sections():
+            found.update(cp.options(section))
+
+        missing = [ep for ep in entry_points if ep not in found]
+        if missing:
+            print(f'ERROR: missing entry points in {wheel}: {missing}')
+            print(f'Found: {sorted(found)}')
+            sys.exit(1)
+
+        print(f'Verified {len(entry_points)} entry point(s) in {os.path.basename(wheel)}')
+        "
