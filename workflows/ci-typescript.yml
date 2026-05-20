@@ -47,7 +47,6 @@ jobs:
         with:
           language: node
           version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
 
       - name: Run lint
         shell: bash
@@ -65,7 +64,6 @@ jobs:
         with:
           language: node
           version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
 
       - name: Run typecheck
         shell: bash
@@ -79,7 +77,6 @@ jobs:
         with:
           language: node
           version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
 
       - name: Run tests
         shell: bash
@@ -93,7 +90,6 @@ jobs:
         with:
           language: node
           version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
 
       - name: Run build
         shell: bash

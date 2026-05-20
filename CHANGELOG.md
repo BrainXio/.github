@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] — 2026-05-20
+
+### Changed
+
+- `common-setup` callers now omit redundant `with:` inputs that match defaults:
+  - `ci-rust.yml` no longer passes `toolchain:` (falls back to `version`)
+  - `ci-typescript.yml` no longer passes `package-manager:` when it equals default `'npm'`
+  - `publish-npm.yml` no longer passes `package-manager:` when it equals default `'npm'`
+  - `ci-python.yml` no longer passes `extra-deps:` when empty
+- `self-ci.yml` now runs the full synthetic Rust CI test on both `ubuntu-22.04` and `ubuntu-24.04` (matrix expansion beyond Python).
+
 ## [1.0.7] — 2026-05-20
 
 ### Security

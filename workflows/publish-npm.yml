@@ -36,7 +36,6 @@ jobs:
         with:
           language: node
           version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
           registry-url: ${{ inputs.registry-url }}
           scope: ${{ inputs.scope }}
 

@@ -63,7 +63,6 @@ jobs:
         with:
           language: python
           version: ${{ inputs.python-version }}
-          extra-deps: ${{ inputs.extra-deps }}
 
       - name: Validate paths
         shell: bash
@@ -92,7 +91,6 @@ jobs:
         with:
           language: python
           version: ${{ inputs.python-version }}
-          extra-deps: ${{ inputs.extra-deps }}
 
       - name: Determine mypy target
         id: mypy-target
@@ -125,7 +123,6 @@ jobs:
         with:
           language: python
           version: ${{ inputs.python-version }}
-          extra-deps: ${{ inputs.extra-deps }}
 
       - name: Run tests with coverage
         shell: bash
@@ -147,7 +144,6 @@ jobs:
         with:
           language: python
           version: ${{ inputs.python-version }}
-          extra-deps: ${{ inputs.extra-deps }}
 
       - run: uv run python -m build
 
@@ -194,7 +190,6 @@ jobs:
         with:
           language: python
           version: ${{ inputs.python-version }}
-          extra-deps: ${{ inputs.extra-deps }}
 
       - name: Run MCP integration tests
         shell: bash
