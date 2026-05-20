@@ -22,4 +22,4 @@ These files are copied into each disorder-family repository (`ocd`, future `adhd
 - Local copies in individual repos may exist with a short header pointing back to this location.
 - Never recreate or significantly modify these files locally without checking the source of truth.
 
-See `docs/explanation/org-defaults.md` in any project repository for full usage rules.
+These files are copied into consumer repositories. Do not symlink in production.

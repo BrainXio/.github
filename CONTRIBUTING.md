@@ -200,7 +200,7 @@ jobs:
 GPG signing is required for all commits. Setup instructions:
 
 ```
-docs/ci-gpg-signing.md
+docs/security.md
 ```
 
 Non-interactive signing is available via `bin/gpg-sign` in the workspace root.
