@@ -30,12 +30,28 @@ jobs:
 
 Copy files from `defaults/` into your repository root. Do not symlink in production — symlinks break on fork, offline work, and raw URL access.
 
+## Consumer Workflow Reference
+
+See [workflows/CONSUMER.md](workflows/CONSUMER.md) for the complete list of workflows safe to call via `uses:` and their usage examples.
+
 ## Self-Only Workflows
 
 The following workflows are internal to `brainxio/.github` and are **not** published for consumer use:
 
 - `enforce-branch-protection.yml` — protects `main` on this repo only
 - `cache-hygiene.yml` — monitors cache usage on this repo only
+
+## Updating the v1 Floating Tag
+
+After every `v1.0.x` release, a maintainer must manually update the floating `v1` tag:
+
+```bash
+git fetch origin
+git tag -fa v1 -m "v1 → v1.0.x"
+git push -f origin v1
+```
+
+This is deliberately manual — an automated force-push would be a security risk.
 
 ## Cache Best Practices
 
