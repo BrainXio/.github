@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] — 2026-05-20
+
+### Changed
+
+- Migrated all `runs-on: ubuntu-22.04` to `ubuntu-24.04` across every workflow.
+
+## [1.0.4] — 2026-05-20
+
+### Fixed
+
+- Deleted zombie consumer copies: `workflows/self-ci.yml` and `workflows/enforce-branch-protection.yml`.
+- Corrected `cp` paths in `.github/workflows/self-ci.yml` consumer-simulation job.
+
+### Changed
+
+- Updated all consumer workflow headers to reference `@v1` floating tag.
+- Replaced single giant v1.0.3 commit with seven atomic commits.
+
+### Added
+
+- `restore-keys` fallbacks to `setup-go`, `setup-node`, and `setup-python` composite actions.
+- `actions/cache-best-practices.md` documenting the cache pattern.
+- `actions/README.md` linking to cache best practices.
+
 ## [1.0.3] — 2026-05-20
 
 ### Fixed
