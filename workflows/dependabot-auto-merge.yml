@@ -1,4 +1,7 @@
 name: Auto-merge Dependabot PRs
+# === Consumer reusable workflow ===
+# Always call via: uses: brainxio/.github/workflows/dependabot-auto-merge.yml@v1.0.0
+# Do NOT copy the file unless you intend to fork.
 
 on:
   workflow_call:

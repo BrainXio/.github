@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] — 2026-05-20
+
+### Fixed
+
+- Changed all consumer workflow action references from relative (`./.github/actions/...`) to absolute (`brainxio/.github/actions/...@v1.0.0`). Relative paths resolve in the caller's repository, breaking downstream consumers. This was a critical regression in v1.0.0.
+- `publish-pypa.yml`:
+  - Changed `enable-cache` from `false` to `true`
+  - Added `PYPI_API_TOKEN` secret input with fallback to `GITHUB_TOKEN`
+  - Added clear token contract documentation (GitHub Packages vs PyPI.org)
+
+### Added
+
+- Consumer warning headers to all 11 reusable workflow files in `workflows/`
+- `self-ci.yml` enforcement steps:
+  - Fail on deprecated `actions/cache@v[0-3]` usage
+  - Fail on relative action paths (`./.github/actions/`) in consumer workflows
+
 ## [1.0.0] — 2026-05-20
 
 ### Added

@@ -1,4 +1,7 @@
 name: Publish Python Package
+# === Consumer reusable workflow ===
+# Always call via: uses: brainxio/.github/workflows/publish-pypa.yml@v1.0.0
+# Do NOT copy the file unless you intend to fork.
 
 on:
   workflow_call:
@@ -8,9 +11,13 @@ on:
         type: string
         default: "false"
       repository-url:
-        description: "Package registry URL"
+        description: "Package registry URL. Default GitHub Packages (uses GITHUB_TOKEN). For pypi.org use https://upload.pypi.org/legacy/ and provide PYPI_API_TOKEN secret."
         type: string
         default: "https://pypi.pkg.github.com/${{ github.repository_owner }}"
+    secrets:
+      PYPI_API_TOKEN:
+        description: "PyPI API token. Required for pypi.org or test.pypi.org. Omit for GitHub Packages."
+        required: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026
@@ -40,8 +47,11 @@ jobs:
         run: uv run python -m build
 
       - name: Publish to registry
+        # Token contract:
+        #   - GitHub Packages (default URL)  → GITHUB_TOKEN is sufficient.
+        #   - pypi.org / test.pypi.org       → caller MUST provide PYPI_API_TOKEN secret.
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
         with:
           repository-url: ${{ inputs.repository-url }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.PYPI_API_TOKEN || secrets.GITHUB_TOKEN }}
           attestations: ${{ inputs.attestations }}

@@ -1,4 +1,7 @@
 name: Publish Crate
+# === Consumer reusable workflow ===
+# Always call via: uses: brainxio/.github/workflows/publish-cargo.yml@v1.0.0
+# Do NOT copy the file unless you intend to fork.
 
 on:
   workflow_call:

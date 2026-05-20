@@ -1,4 +1,7 @@
 name: Python CI
+# === Consumer reusable workflow ===
+# Always call via: uses: brainxio/.github/workflows/ci-python.yml@v1.0.0
+# Do NOT copy the file unless you intend to fork.
 
 on:
   workflow_call:
