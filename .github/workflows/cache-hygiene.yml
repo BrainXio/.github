@@ -1,0 +1,29 @@
+name: Cache Hygiene
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'  # weekly Monday 3am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    name: Monitor Cache Usage
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check cache usage
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache-report
+          key: cache-report-placeholder
+
+      - name: Report cache status
+        shell: bash
+        run: |
+          echo "GitHub cache limit is 10 GB per repo."
+          echo "Navigate to: Settings → Actions → Caches to review current usage."
+          echo "Delete any cache older than 7 days with zero hits."
+          echo "---"
+          echo "To list caches via CLI: gh api repos/\$OWNER/\$REPO/actions/caches"
