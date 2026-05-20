@@ -10,8 +10,16 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
     - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
       with:
         go-version: ${{ inputs.go-version }}
         cache: true
-        # restore-keys are handled automatically by setup-go

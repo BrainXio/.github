@@ -14,11 +14,18 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.cache/uv
+        key: ${{ runner.os }}-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock', '**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-uv-
+
     - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
       with:
         python-version: ${{ inputs.python-version }}
         enable-cache: true
-        # restore-keys are handled automatically by setup-uv
 
     - name: Install dependencies
       shell: bash
