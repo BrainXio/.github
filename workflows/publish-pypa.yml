@@ -1,6 +1,6 @@
 name: Publish Python Package
 # === Consumer reusable workflow ===
-# Always call via: uses: brainxio/.github/workflows/publish-pypa.yml@v1.0.0
+# Always call via: uses: brainxio/.github/workflows/publish-pypa.yml@v1
 # Do NOT copy the file unless you intend to fork.
 
 on:

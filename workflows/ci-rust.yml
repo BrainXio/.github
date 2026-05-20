@@ -1,6 +1,6 @@
 name: Rust CI
 # === Consumer reusable workflow ===
-# Always call via: uses: brainxio/.github/workflows/ci-rust.yml@v1.0.0
+# Always call via: uses: brainxio/.github/workflows/ci-rust.yml@v1
 # Do NOT copy the file unless you intend to fork.
 
 on:
@@ -34,7 +34,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-rust-deps@v1
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -48,7 +48,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-rust-deps@v1
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -75,7 +75,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-rust-deps@v1
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -89,7 +89,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-rust-deps@v1
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -104,7 +104,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-rust-deps@v1
         with:
           toolchain: ${{ inputs.toolchain }}
 

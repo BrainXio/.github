@@ -1,6 +1,6 @@
 name: Sync Defaults
 # === Consumer reusable workflow ===
-# Always call via: uses: brainxio/.github/workflows/sync-defaults.yml@v1.0.0
+# Always call via: uses: brainxio/.github/workflows/sync-defaults.yml@v1
 # Do NOT copy the file unless you intend to fork.
 
 on:

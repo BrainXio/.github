@@ -1,6 +1,6 @@
 name: Python CI
 # === Consumer reusable workflow ===
-# Always call via: uses: brainxio/.github/workflows/ci-python.yml@v1.0.0
+# Always call via: uses: brainxio/.github/workflows/ci-python.yml@v1
 # Do NOT copy the file unless you intend to fork.
 
 on:
@@ -66,7 +66,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-python-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-python-deps@v1
         with:
           python-version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
@@ -98,7 +98,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-python-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-python-deps@v1
         with:
           python-version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
@@ -154,7 +154,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-python-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-python-deps@v1
         with:
           python-version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
@@ -179,7 +179,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-python-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-python-deps@v1
         with:
           python-version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}
@@ -241,7 +241,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-python-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-python-deps@v1
         with:
           python-version: ${{ inputs.python-version }}
           extra-deps: ${{ inputs.extra-deps }}

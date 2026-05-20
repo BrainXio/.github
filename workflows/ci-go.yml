@@ -1,6 +1,6 @@
 name: Go CI
 # === Consumer reusable workflow ===
-# Always call via: uses: brainxio/.github/workflows/ci-go.yml@v1.0.0
+# Always call via: uses: brainxio/.github/workflows/ci-go.yml@v1
 # Do NOT copy the file unless you intend to fork.
 
 on:
@@ -26,7 +26,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-go-deps@v1
         with:
           go-version: ${{ inputs.go-version }}
 
@@ -48,7 +48,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-go-deps@v1
         with:
           go-version: ${{ inputs.go-version }}
 
@@ -62,7 +62,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-go-deps@v1
         with:
           go-version: ${{ inputs.go-version }}
 
@@ -76,7 +76,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-go-deps@v1
         with:
           go-version: ${{ inputs.go-version }}
 

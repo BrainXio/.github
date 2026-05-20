@@ -1,6 +1,6 @@
 name: Publish Crate
 # === Consumer reusable workflow ===
-# Always call via: uses: brainxio/.github/workflows/publish-cargo.yml@v1.0.0
+# Always call via: uses: brainxio/.github/workflows/publish-cargo.yml@v1
 # Do NOT copy the file unless you intend to fork.
 
 on:
@@ -30,7 +30,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
+      - uses: brainxio/.github/actions/setup-rust-deps@v1
         with:
           toolchain: ${{ inputs.toolchain }}
           components: clippy, rustfmt
