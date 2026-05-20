@@ -23,6 +23,6 @@ Shared workflows, issue templates, and configuration files consumed by all Brain
 | [brainxio/workflows](https://github.com/brainxio/workflows) | Reusable workflow callers |
 | [brainxio/tools](https://github.com/brainxio/tools) | Python MCP servers and composite actions |
 
-## Contributing
+## Standards Enforcement
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit style, and CI requirements.
+All standards are enforced via CI and branch protection. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit style, and CI requirements.
