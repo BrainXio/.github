@@ -1,24 +1,28 @@
-# BrainXio Framework & Setup
+# BrainXio Organization Defaults
 
-Org-level defaults and agent entry points.
+Shared workflows, issue templates, and configuration files consumed by all BrainXio repositories.
 
-## Environment Structure
+## What This Repository Provides
 
-All projects live under a main workspace (`~/brainxio/` or `/opt/brainxio/`).
-
-Each repository follows the standard layout defined in the BrainXio standards.
-
-## Core Expectations
-
-- Local models and guardrails run where hardware allows
-- Cloud sessions respect subscription tiers and never exceed them without explicit Core approval
-- Local-first by default; clear separation between development and runtime containers
-- `gh` CLI is the only allowed management interface for GitHub organisation resources
-- SSH keypairs and GPG keys for commits are managed exclusively through the `tools/` directory
+| Directory | Contents | Consumers |
+|-----------|----------|-----------|
+| `.github/workflows/` | Reusable workflows (CI, branch protection, release automation) | All BrainXio repos |
+| `.github/actions/` | Composite actions (setup-* helpers) | Reusable workflows above |
+| `defaults/` | Lint configs (yamllint, hadolint, mdformat, prettier) | Copied to consumer repos via sync-defaults |
+| `ISSUE_TEMPLATE/` | GitHub issue templates | All BrainXio repos |
+| `profile/` | Public organization profile | GitHub org page |
 
 ## Related Repositories
 
 | Repository | Purpose |
 | ---------- | ------- |
-| [brainxio/docs](https://github.com/brainxio/docs) | Diátaxis documentation framework (protocols, roles, rules, skills) |
-| [brainxio/tools](https://github.com/brainxio/tools) | Agent capability tools (bootstrap, tier detection, safe operations) |
+| [brainxio/.claude](https://github.com/brainxio/.claude) | Runtime: hooks, rules, skills, agents, profiles, settings |
+| [brainxio/.agents](https://github.com/brainxio/.agents) | Knowledge base and documentation |
+| [brainxio/.ollama](https://github.com/brainxio/.ollama) | Model definitions and modelfiles |
+| [brainxio/.containers](https://github.com/brainxio/.containers) | Container stack and orchestration |
+| [brainxio/workflows](https://github.com/brainxio/workflows) | Reusable workflow callers |
+| [brainxio/tools](https://github.com/brainxio/tools) | Python MCP servers and composite actions |
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit style, and CI requirements.
