@@ -1,33 +1,101 @@
 ---
 name: Bug Report
-about: Create a report to help us improve
+description: Report something that is not working as expected
 title: "[BUG] "
-labels: bug
-assignees: ''
-
+labels:
+  - bug
+assignees: ""
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Description
+        A clear and concise summary of the bug.
+  - type: textarea
+    id: workflow-name
+    attributes:
+      label: Workflow Name
+      description: Which reusable workflow is affected (e.g. `feature-implement`, `fix-bug`, `train-model`)?
+      placeholder: "e.g. feature-implement"
+    validations:
+      required: true
+  - type: input
+    id: runner-os
+    attributes:
+      label: Runner OS
+      description: Operating system and version of the runner that executed the workflow
+      placeholder: "e.g. ubuntu-24.04, macos-15, windows-2022"
+    validations:
+      required: true
+  - type: input
+    id: runner-version
+    attributes:
+      label: Runner Version
+      description: Specific version of the runner software or GitHub Actions runtime
+      placeholder: "e.g. 2.331.1, 2.323.0"
+    validations:
+      required: false
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: "Ordered steps to reproduce the bug: what did you do, in what order?"
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened instead of the bug?
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include any error messages or unexpected outcomes.
+    validations:
+      required: true
+  - type: textarea
+    id: logs-output
+    attributes:
+      label: Logs / Output
+      description: Relevant log entries, error traces, or command output (use a code block)
+      placeholder: |
+        ```text
+        <paste logs here>
+        ```
+    validations:
+      required: false
+  - type: textarea
+    id: workflow-config
+    attributes:
+      label: Workflow Config Snippet
+      description: How the workflow was called — paste the relevant `uses:` or `run:` block from your workflow file
+      placeholder: |
+        ```yaml
+        - uses: brainxio/workflows/.github/workflows/feature-implement.yml@main
+          with:
+            ...
+        ```
+    validations:
+      required: false
+  - type: textarea
+    id: possible-fix
+    attributes:
+      label: Possible Fix (Optional)
+      description: If you have an idea of what is causing the bug, describe it here.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context such as branch, commit SHA, or related issues.
+    validations:
+      required: false
 ---
-
-**Describe the bug**
-A clear and concise description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
-
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Environment**
-- OS: [e.g. Ubuntu 22.04, macOS 15, Windows 11]
-- Runtime / Language version: [e.g. Python 3.12, Node 22, etc.]
-- Repository and branch: [e.g. brainxio/ocd/main]
-- Any other relevant environment details:
-
-**Additional context**
-Add any other context about the problem here.

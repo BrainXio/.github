@@ -1,20 +1,58 @@
 ---
 name: Feature Request
-about: Suggest an idea or enhancement
+description: Suggest an idea or enhancement for the workflow library
 title: "[FEATURE] "
-labels: enhancement
-assignees: ''
-
+labels:
+  - enhancement
+assignees: ""
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Problem Description
+        Describe the problem, limitation, or friction point this enhancement would address.
+        Be concrete — cite a specific scenario or pain point, not a vague future need.
+  - type: textarea
+    id: affected-workflows
+    attributes:
+      label: Affected Workflows
+      description: Which workflows would this change impact?
+      placeholder: |
+        - feature-implement
+        - fix-bug
+        - train-model
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you are proposing. Include具体的 changes to inputs, outputs, steps, or logic.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches did you consider? Why were they rejected?
+    validations:
+      required: false
+  - type: dropdown
+    id: pr-contribution
+    attributes:
+      label: Would you submit a PR?
+      description: Are you planning to contribute the implementation yourself?
+      options:
+        - "Yes — I will implement this"
+        - "No — someone else should handle it"
+        - "Need guidance — I want to contribute but need direction"
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Attach mock configs, diagrams, or any other supporting material.
+    validations:
+      required: false
 ---
-
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
-
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
-
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.

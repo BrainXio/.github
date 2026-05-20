@@ -1,46 +1,66 @@
 # Security Policy
 
-We take security seriously at BrainXio. If you discover a vulnerability in any of our projects, please report it responsibly.
-
 ## Supported Versions
 
-- We actively support the latest release of each repository.
-- Older versions may not receive security fixes — upgrade when possible.
+| Version | Support Status | Notes |
+|---------|---------------|-------|
+| v1.x   | Active support | Receive security patches |
+| v0.x   | End of life | No security updates; upgrade required |
+
+## Scope
+
+- BrainXio GitHub repositories
+- GitHub Actions workflows
+- MCP servers (`brainxio-agent-*` packages)
+- Published packages: npm (`@brainxio/*`), PyPI (`brainxio-*`), crates.io (`brainxio-*`)
+
+## Out of Scope
+
+- Social engineering or phishing attacks
+- Denial-of-service attacks
+- Third-party services or dependencies (report upstream)
+- Vulnerabilities already disclosed via public CVE
 
 ## Reporting a Vulnerability
 
-Please report security issues privately so we can address them before public disclosure.
+**Preferred: GitHub Security Advisories**
+Open a draft advisory at `https://github.com/BrainXio/<repo>/security/advisories/new`.
 
-**Preferred method**:
-- Open a **private** issue in this `.github` repository (use the security template if available, or just mark it confidential).
-- Or email: [github@brainxio.org].
+**Backup: Email**
+Contact github@brainxio.org. Encrypt if possible (PGP key available on keyserver).
 
-**What to include**:
-- Affected repository and version
-- Steps to reproduce (if possible)
-- Potential impact (what could go wrong?)
-- Any proof-of-concept code or screenshots
-- Your preferred contact method for follow-up
+**What to include:**
+- Affected repository and version or commit SHA
+- Description of the vulnerability
+- Steps to reproduce
+- Proof-of-concept or exploit (if any)
+- Potential impact assessment
 
-We will:
-- Acknowledge receipt as soon as possible (usually within a few days)
-- Investigate promptly
-- Keep you informed of progress
-- Credit you (if desired) in the release notes or security advisory when fixed
+**Do not** open public issues or discuss vulnerabilities publicly until a patch is available.
 
-Please **do not** open public issues or discuss vulnerabilities publicly until we have had time to address them.
+## Response SLAs
 
-## How We Stay Secure
+| Severity | Initial Response | Triage |
+|----------|-----------------|--------|
+| Critical | 24 hours        | 48 hours |
+| High     | 48 hours        | 5 business days |
+| Medium   | 5 business days | — |
+| Low      | 5 business days | — |
 
-- Minimal dependencies across all projects
-- Dependabot alerts enabled where applicable
-- Human review of pull requests
-- Regular dependency updates
-- No external service calls in core logic
+Severity is assessed by BrainXio based on CVSS scoring and blast radius.
 
-## Security Updates
+## Coordinated Vulnerability Disclosure (CVD)
 
-- Security fixes will be released as patch versions (e.g. v1.0.1) when necessary.
-- Critical issues will be announced via GitHub Releases, security advisories, and (if needed) direct notifications.
+1. Reporter submits via GitHub Security Advisory or email.
+2. BrainXio acknowledges within the SLA window.
+3. BrainXio reproduces and validates, requests CVE number if applicable.
+4. Fix is developed under embargo.
+5. Patch is released publicly with credit (if agreed).
+6. Public disclosure occurs **only after a fix is available**.
+7. Full public advisory published within **90 days** of initial report, regardless of patch status.
 
-Thank you for helping keep **BrainXio** secure — your responsible disclosure makes a real difference.
+## Safe Harbor
+
+Good-faith security research performed in accordance with this policy will not result in legal action by BrainXio.
+
+BrainXio reserves the right to update this policy. Substantive changes will be reflected in this file.
