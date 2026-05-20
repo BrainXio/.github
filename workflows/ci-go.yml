@@ -23,7 +23,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-go-deps
+      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
         with:
           go-version: ${{ inputs.go-version }}
 
@@ -45,7 +45,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-go-deps
+      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
         with:
           go-version: ${{ inputs.go-version }}
 
@@ -59,7 +59,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-go-deps
+      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
         with:
           go-version: ${{ inputs.go-version }}
 
@@ -73,7 +73,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-go-deps
+      - uses: brainxio/.github/actions/setup-go-deps@v1.0.0
         with:
           go-version: ${{ inputs.go-version }}
 

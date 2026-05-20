@@ -47,13 +47,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-node-deps
+      - uses: brainxio/.github/actions/setup-node-deps@v1.0.0
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
           script: ${{ inputs.lint-script }}
 
-      - uses: ./.github/actions/setup-node-deps
+      - uses: brainxio/.github/actions/setup-node-deps@v1.0.0
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
@@ -67,7 +67,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-node-deps
+      - uses: brainxio/.github/actions/setup-node-deps@v1.0.0
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
@@ -81,7 +81,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-node-deps
+      - uses: brainxio/.github/actions/setup-node-deps@v1.0.0
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
@@ -95,7 +95,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-node-deps
+      - uses: brainxio/.github/actions/setup-node-deps@v1.0.0
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}

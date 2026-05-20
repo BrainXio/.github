@@ -31,7 +31,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-rust-deps
+      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -45,7 +45,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-rust-deps
+      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -72,7 +72,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-rust-deps
+      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -86,7 +86,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-rust-deps
+      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
         with:
           toolchain: ${{ inputs.toolchain }}
 
@@ -101,7 +101,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/setup-rust-deps
+      - uses: brainxio/.github/actions/setup-rust-deps@v1.0.0
         with:
           toolchain: ${{ inputs.toolchain }}
 
