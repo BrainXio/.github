@@ -13,7 +13,7 @@ on:
         default: "https://pypi.pkg.github.com/${{ github.repository_owner }}"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026 — see docs/node24-migration.md
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026
 
 jobs:
   publish:
