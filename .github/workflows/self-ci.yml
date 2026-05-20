@@ -54,6 +54,16 @@ jobs:
           print('All workflow files valid')
           "
 
+      - name: Enforce absolute action references (no relative paths)
+        run: |
+          ! grep -rE 'uses: \./\.github/actions/' workflows/ .github/workflows/ || \
+          (echo "FAIL: Relative ./ .github/actions/ paths found in consumer workflows" && exit 1)
+
+      - name: Enforce no deprecated actions/cache@v[0-3]
+        run: |
+          ! grep -rE 'actions/cache@v[0-3]' . || \
+          (echo "FAIL: Deprecated actions/cache@v[0-3] detected — must use @v4" && exit 1)
+
   test-ci-python-synthetic:
     name: Synthetic Python CI Test
     runs-on: ubuntu-22.04

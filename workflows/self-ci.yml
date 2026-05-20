@@ -54,28 +54,6 @@ jobs:
           print('All workflow files valid')
           "
 
-      - name: Enforce cache action versions
-        shell: bash
-        run: |
-          bad=$(grep -rn 'uses: actions/cache@v[0-3]' .github/workflows/ || true)
-          if [ -n "$bad" ]; then
-            echo "FAIL: deprecated actions/cache versions found (must use v4+):"
-            echo "$bad"
-            exit 1
-          fi
-          echo "Cache action versions OK"
-
-      - name: Enforce absolute action references
-        shell: bash
-        run: |
-          bad=$(grep -rn 'uses: \./\.github/actions/' .github/workflows/ || true)
-          if [ -n "$bad" ]; then
-            echo "FAIL: relative action paths found in consumer workflows (must use absolute brainxio/.github/actions/...@v1.0.0):"
-            echo "$bad"
-            exit 1
-          fi
-          echo "Action references OK"
-
   test-ci-python-synthetic:
     name: Synthetic Python CI Test
     runs-on: ubuntu-22.04
