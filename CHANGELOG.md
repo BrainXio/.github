@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.6] — 2026-05-20
+
+### Added
+
+- `actions/common-setup` composite — checkout + language setup in one step, eliminating duplicated `actions/checkout` + `setup-*-deps` blocks across all CI workflows.
+- `actions/verify-wheel-entrypoints` composite — extracted from inline Python script in `ci-python.yml`.
+- `actions/run-mcp-tests` composite — extracted from inline bash script in `ci-python.yml`.
+- `.github/workflows/post-release.yml` — automatically force-updates the `v1` floating tag on every `v1.0.*` release push.
+- `workflows/CONSUMER.md` — documents which workflows are safe for external `uses:` consumption.
+
+### Changed
+
+- All CI workflows (`ci-python`, `ci-go`, `ci-rust`, `ci-typescript`, `publish-npm`) now use `common-setup@v1`.
+- `ci-python.yml`: simplified mypy target determination — removed auto-detection magic; defaults to `src-path` directly.
+- `ci-python.yml`: replaced inline wheel verification and MCP test scripts with their new composite actions.
+- `ci-typescript.yml`: eliminated duplicate `setup-node-deps` calls; scripts now run as explicit steps after common-setup.
+
 ## [1.0.5] — 2026-05-20
 
 ### Changed
