@@ -6,12 +6,8 @@ BrainXio builds agent infrastructure and tooling.
 
 | Repository | Description |
 |------------|-------------|
-| [.workflows](https://github.com/brainxio/workflows) | Reusable workflow callers |
-| [.github](https://github.com/brainxio/.github) | Org-wide defaults: workflows, templates, lint configs |
+| [.github](https://github.com/brainxio/.github) | Reusable workflows, actions, issue templates, and org defaults |
 | [tools](https://github.com/brainxio/tools) | Python MCP servers and composite actions |
-| [.claude](https://github.com/brainxio/.claude) | Runtime: hooks, rules, skills, agents, profiles, settings |
-| [.agents](https://github.com/brainxio/.agents) | Knowledge base and documentation |
-| [.ollama](https://github.com/brainxio/.ollama) | Model definitions and modelfiles |
 
 ## Contributing
 

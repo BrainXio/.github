@@ -78,7 +78,7 @@ body:
       description: How the workflow was called — paste the relevant `uses:` or `run:` block from your workflow file
       placeholder: |
         ```yaml
-        - uses: brainxio/workflows/.github/workflows/feature-implement.yml@main
+        - uses: brainxio/.github/workflows/feature-implement.yml@main
           with:
             ...
         ```

@@ -1,0 +1,16 @@
+name: 'Setup Go Dependencies'
+description: 'Install Go with caching'
+
+inputs:
+  go-version:
+    description: 'Go version'
+    required: false
+    default: '1.22'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache: true

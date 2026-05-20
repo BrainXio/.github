@@ -16,30 +16,46 @@
 ### Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/BrainXio/workspace.git
-cd workspace
-```
-
-If you already cloned without submodules:
-
-```bash
-git submodule update --init --recursive
+git clone https://github.com/BrainXio/.github.git
+cd .github
 ```
 
 ### Local Commands
 
 ```bash
-# Lint (in .claude/ submodule)
-cd .claude && uv run ruff check . && cd ..
+# Validate workflow YAML syntax
+python3 -c "
+import yaml, glob, sys
+errors = []
+for f in sorted(glob.glob('.github/workflows/*.yml')):
+    try:
+        with open(f) as fh:
+            yaml.safe_load(fh)
+    except Exception as e:
+        errors.append(f'{f}: {e}')
+if errors:
+    for e in errors:
+        print(f'FAIL: {e}', file=sys.stderr)
+    sys.exit(1)
+print('All workflow files valid')
+"
 
-# Type check (in .claude/ submodule)
-cd .claude && uv run mypy src/ && cd ..
-
-# Run bootstrap
-uvx --from git+https://github.com/brainxio/.claude.git claude-bootstrap
-
-# Sign commits non-interactively
-bin/gpg-sign
+# Validate composite action syntax
+python3 -c "
+import yaml, glob, sys
+errors = []
+for f in sorted(glob.glob('.github/actions/*/action.yml')):
+    try:
+        with open(f) as fh:
+            yaml.safe_load(fh)
+    except Exception as e:
+        errors.append(f'{f}: {e}')
+if errors:
+    for e in errors:
+        print(f'FAIL: {e}', file=sys.stderr)
+    sys.exit(1)
+print('All action files valid')
+"
 ```
 
 ---
@@ -72,7 +88,7 @@ Types: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`, `perf`
 
 The workspace includes hooks that run automatically on `git commit`:
 
-- **.githooks/pre-commit**: blocks AI attribution patterns, checks submodule/workspace alignment, runs `.claude/` pre-commit via `uvx`
+- **.githooks/pre-commit**: blocks AI attribution patterns in staged files
 - **.githooks/commit-msg**: blocks AI attribution in commit messages
 
 If hooks fail, fix the reported issue and re-commit. Do not use `--no-verify`.
@@ -83,7 +99,7 @@ If hooks fail, fix the reported issue and re-commit. Do not use `--no-verify`.
 
 ### Validate Workflow Syntax
 
-`.github/defaults/self-ci.yml` validates the syntax of all CI workflow files. Run it locally:
+`.github/workflows/self-ci.yml` validates the syntax of all CI workflow files. Run it locally:
 
 ```yaml
 # .github/workflows/my-workflow.yml
@@ -98,7 +114,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate workflows
-        uses: BrainXio/workflows/.github/workflows/self-ci.yml@v1
+        uses: BrainXio/.github/workflows/self-ci.yml@v1
 ```
 
 ### Test Composite Actions
@@ -110,7 +126,7 @@ Example — call `ci-python.yml` from a consumer repo:
 ```yaml
 jobs:
   test:
-    uses: BrainXio/workflows/.github/workflows/ci-python.yml@v1
+    uses: BrainXio/.github/workflows/ci-python.yml@v1
     with:
       python-version: "3.12"
 ```
@@ -141,7 +157,7 @@ Consumer repos call workflows via `uses:` with a version tag. Pin to a tag (e.g.
 ```yaml
 jobs:
   test:
-    uses: BrainXio/workflows/.github/workflows/ci-python.yml@v1
+    uses: BrainXio/.github/workflows/ci-python.yml@v1
     with:
       python-version: "3.12"
 ```
@@ -151,7 +167,7 @@ jobs:
 ```yaml
 jobs:
   test:
-    uses: BrainXio/workflows/.github/workflows/ci-typescript.yml@v1
+    uses: BrainXio/.github/workflows/ci-typescript.yml@v1
     with:
       node-version: "20"
 ```
@@ -161,7 +177,7 @@ jobs:
 ```yaml
 jobs:
   test:
-    uses: BrainXio/workflows/.github/workflows/ci-go.yml@v1
+    uses: BrainXio/.github/workflows/ci-go.yml@v1
     with:
       go-version: "1.22"
 ```
@@ -171,7 +187,7 @@ jobs:
 ```yaml
 jobs:
   housekeeping:
-    uses: BrainXio/workflows/.github/workflows/pr-stale.yml@v1
+    uses: BrainXio/.github/workflows/pr-stale.yml@v1
     with:
       days-before-stale: 30
       days-before-close: 7

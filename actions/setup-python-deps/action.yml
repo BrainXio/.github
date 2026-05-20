@@ -1,0 +1,41 @@
+name: 'Setup Python Dependencies'
+description: 'Install Python dependencies with uv, optional extra groups, and caching'
+
+inputs:
+  python-version:
+    description: 'Python version'
+    required: true
+    default: '3.10'
+  extra-deps:
+    description: 'Extra uv sync dependency groups (comma-separated, alphanumeric/dash/underscore only)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+      with:
+        python-version: ${{ inputs.python-version }}
+        enable-cache: true
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.extra-deps }}" ]; then
+          IFS=',' read -ra GROUPS <<< "${{ inputs.extra-deps }}"
+          flags=""
+          for g in "${GROUPS[@]}"; do
+            # Trim whitespace — pure bash, no xargs
+            g="${g#"${g%%[![:space:]]*}"}"
+            g="${g%"${g##*[![:space:]]}"}"
+            if [[ ! "$g" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+              echo "ERROR: invalid group name: $g" >&2
+              exit 1
+            fi
+            flags="$flags --group $g"
+          done
+          uv sync $flags
+        else
+          uv sync
+        fi

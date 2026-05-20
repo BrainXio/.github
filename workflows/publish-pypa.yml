@@ -1,0 +1,47 @@
+name: Publish Python Package
+
+on:
+  workflow_call:
+    inputs:
+      attestations:
+        description: "Enable PEP 740 attestations"
+        type: string
+        default: "false"
+      repository-url:
+        description: "Package registry URL"
+        type: string
+        default: "https://pypi.pkg.github.com/${{ github.repository_owner }}"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node 20→24 migration, remove Q3 2026 — see docs/node24-migration.md
+
+jobs:
+  publish:
+    name: Build and Publish
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          enable-cache: false
+
+      - name: Install dependencies
+        shell: bash
+        run: uv sync
+
+      - name: Build package
+        run: uv run python -m build
+
+      - name: Publish to registry
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
+        with:
+          repository-url: ${{ inputs.repository-url }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          attestations: ${{ inputs.attestations }}

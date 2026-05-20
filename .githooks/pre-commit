@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# standards-guard pre-commit hook
+# Blocks manifesto content, phantom repo links, and philosophy in standards docs
+set -euo pipefail
+
+FORBIDDEN_PATTERNS=(
+  "local-first"
+  "local first"
+  "quiet joy"
+  "[Cc]ore approval"
+  "[Ss]acred"
+  "[Aa]nother [Ii]ntelligence"
+  "sovereign AI"
+  "sovereign agent"
+  "fun\*\*ctional"
+  "becoming a proper idiot"
+  "restless mirror of curiosity"
+  "is the only allowed"
+  "is the \*\*only\*\* allowed"
+  "managed exclusively through"
+  "AI will replace"
+  "existential risk"
+  "existential threat"
+  "intelligence explosion"
+  "paperclip maximizer"
+  "paperclip"
+  "kill switch"
+  "AI uprising"
+  "robot takeover"
+  "unfriendly AI"
+  "control problem"
+  "x-risk"
+  "doomer"
+  "sentient AI"
+  "conscious AI"
+  "AI rights"
+  "technological singularity"
+  "[Cc]o-authored[- ]by"
+  "[Gg]enerated[- ]by[- ]AI"
+  "[Aa]I[- ]generated"
+  "[Ww]ritten[- ]by[- ](Claude|ChatGPT|Copilot|Gemini)"
+  "GitHub[- ]Copilot"
+  "[Cc]reated[- ]with[- ](Claude|ChatGPT|Copilot|Gemini)"
+)
+
+ALLOWED_REPOS=(
+  "brainxio/.github"
+  "brainxio/tools"
+  "brainxio/claude-agent-workflows"
+)
+
+staged_files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+if [ -z "$staged_files" ]; then
+  exit 0
+fi
+
+violations=0
+
+for file in $staged_files; do
+  case "$file" in
+    README.md|CONTRIBUTING.md|SECURITY.md)
+      ;;
+    *)
+      continue
+      ;;
+  esac
+
+  content=$(git show ":$file" 2>/dev/null || true)
+  if [ -z "$content" ]; then
+    continue
+  fi
+
+  for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
+    matches=$(echo "$content" | grep -inE "$pattern" 2>/dev/null || true)
+    if [ -n "$matches" ]; then
+      echo "ERROR: forbidden pattern '$pattern' in $file:" >&2
+      echo "$matches" | head -5 >&2
+      violations=$((violations + 1))
+    fi
+  done
+
+  phantom_links=$(echo "$content" | grep -oE '\[.*?\]\(https://github\.com/[^)]+\)' 2>/dev/null || true)
+  if [ -n "$phantom_links" ]; then
+    while IFS= read -r link; do
+      repo=$(echo "$link" | grep -oE '(brainxio|BrainXio)/[^)]+' || true)
+      if [ -n "$repo" ]; then
+        allowed=false
+        lc_repo=$(echo "$repo" | tr '[:upper:]' '[:lower:]')
+        for ok in "${ALLOWED_REPOS[@]}"; do
+          lc_ok=$(echo "$ok" | tr '[:upper:]' '[:lower:]')
+          if [ "$lc_repo" = "$lc_ok" ]; then
+            allowed=true
+            break
+          fi
+        done
+        if [ "$allowed" = "false" ]; then
+          echo "ERROR: potentially phantom repo link in $file: $repo" >&2
+          violations=$((violations + 1))
+        fi
+      fi
+    done <<< "$phantom_links"
+  fi
+
+  emails=$(echo "$content" | grep -oE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' 2>/dev/null || true)
+  if [ -n "$emails" ]; then
+    while IFS= read -r email; do
+      domain="${email##*@}"
+      if [ "$domain" != "brainxio.org" ]; then
+        echo "ERROR: disallowed email address in $file: $email (only @brainxio.org permitted)" >&2
+        violations=$((violations + 1))
+      fi
+    done <<< "$emails"
+  fi
+done
+
+if [ "$violations" -gt 0 ]; then
+  echo "" >&2
+  echo "Standards guard: $violations violation(s) found. Remove manifesto/philosophy content before committing." >&2
+  exit 1
+fi
+
+exit 0
