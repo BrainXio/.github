@@ -18,6 +18,7 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
         enable-cache: true
+        # restore-keys are handled automatically by setup-uv
 
     - name: Install dependencies
       shell: bash

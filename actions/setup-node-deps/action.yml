@@ -41,6 +41,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ inputs.package-manager }}
+        cache-dependency-path: '**/package-lock.json'
         registry-url: ${{ inputs.registry-url }}
         scope: ${{ inputs.scope }}
 
