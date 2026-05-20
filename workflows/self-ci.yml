@@ -25,12 +25,18 @@ jobs:
         with:
           enable-cache: true
 
-      - run: uv sync
+      - name: Sync dependencies
+        if: hashFiles('pyproject.toml') != ''
+        run: uv sync
+
+      - name: Install PyYAML
+        shell: bash
+        run: pip install pyyaml 2>/dev/null || python3 -m pip install pyyaml
 
       - name: YAML syntax check
         shell: bash
         run: |
-          uv run python -c "
+          python3 -c "
           import sys, yaml, glob
           errors = []
           for f in sorted(glob.glob('.github/workflows/*.yml')):

@@ -14,7 +14,7 @@ These files are copied into each disorder-family repository (`ocd`, future `adhd
 | `.prettierrc` | JavaScript/TypeScript/etc. formatting | Opt-in |
 | `.typos.toml` | Spell-checking ignore list | Required |
 
-**`.prettierrc`** is opt-in. Consumer repos should symlink or copy it if they use Prettier, but it is not enforced. Other files are required and applied automatically by CI.
+**`.prettierrc`** is opt-in. Consumer repos should copy it if they use Prettier, but it is not enforced. Other files are required and applied automatically by CI.
 
 ## Governance
 
