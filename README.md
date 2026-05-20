@@ -1,28 +1,17 @@
 # BrainXio Organization Defaults
 
-Shared workflows, issue templates, and configuration files consumed by all BrainXio repositories.
+Shared workflows, composite actions, issue templates, and lint configs for all BrainXio repositories.
 
-## What This Repository Provides
+## Provided Assets
 
-| Directory | Contents | Consumers |
-|-----------|----------|-----------|
-| `.github/workflows/` | Reusable workflows (CI, branch protection, release automation) | All BrainXio repos |
-| `.github/actions/` | Composite actions (setup-* helpers) | Reusable workflows above |
-| `defaults/` | Lint configs (yamllint, hadolint, mdformat, prettier) | Copied to consumer repos via sync-defaults |
-| `ISSUE_TEMPLATE/` | GitHub issue templates | All BrainXio repos |
-| `profile/` | Public organization profile | GitHub org page |
-
-## Related Repositories
-
-| Repository | Purpose |
-| ---------- | ------- |
-| [brainxio/.claude](https://github.com/brainxio/.claude) | Runtime: hooks, rules, skills, agents, profiles, settings |
-| [brainxio/.agents](https://github.com/brainxio/.agents) | Knowledge base and documentation |
-| [brainxio/.ollama](https://github.com/brainxio/.ollama) | Model definitions and modelfiles |
-| [brainxio/.containers](https://github.com/brainxio/.containers) | Container stack and orchestration |
-| [brainxio/workflows](https://github.com/brainxio/workflows) | Reusable workflow callers |
-| [brainxio/tools](https://github.com/brainxio/tools) | Python MCP servers and composite actions |
+| Directory              | Purpose                                      | Consumers                  |
+|------------------------|----------------------------------------------|----------------------------|
+| .github/workflows/     | Reusable CI/CD workflows                     | All repositories           |
+| .github/actions/       | Composite setup actions                      | Reusable workflows         |
+| defaults/              | Org-wide lint configs (copied via sync)     | All repositories           |
+| ISSUE_TEMPLATE/        | GitHub issue & PR templates                  | All repositories           |
+| profile/               | GitHub organization profile                  | Org page                   |
 
 ## Standards Enforcement
 
-All standards are enforced via CI and branch protection. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit style, and CI requirements.
+All rules are enforced via CI (starter-checks + self-ci), branch protection, and Claude Code hooks. See [CONTRIBUTING.md](CONTRIBUTING.md) for commit style, PR requirements, and local setup.
