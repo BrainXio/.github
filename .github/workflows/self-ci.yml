@@ -113,7 +113,7 @@ jobs:
           import yaml, json, sys, glob
           errors = []
           for f in sorted(glob.glob('defaults/*')):
-              if f.endswith('.toml'):
+              if f.endswith(('.toml', '.md')):
                   continue
               try:
                   if f.endswith('.json'):
