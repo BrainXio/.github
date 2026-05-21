@@ -7,7 +7,9 @@ BrainXio builds agent infrastructure and tooling.
 | Repository | Description |
 |------------|-------------|
 | [.github](https://github.com/brainxio/.github) | Reusable workflows, actions, issue templates, and org defaults |
-| [tools](https://github.com/brainxio/tools) | Python MCP servers and composite actions |
+| [cicd](https://github.com/brainxio/cicd) | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security) |
+| [actions](https://github.com/brainxio/actions) | Composite setup actions for toolchain installation |
+| [.githooks](https://github.com/brainxio/.githooks) | Shared git hooks for the organization |
 
 ## Contributing
 
