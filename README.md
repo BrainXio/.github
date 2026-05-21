@@ -1,68 +1,42 @@
 # BrainXio Organization Defaults
 
-Reusable GitHub Actions workflows, composite actions, issue templates, and lint defaults for the BrainXio organization.
+Organization templates, issue templates, lint defaults, and self-CI for the BrainXio organization.
 
 ## What This Repo Provides
 
 | Directory | Purpose | Used By |
 |---|---|---|
-| `workflows/` | Reusable CI/CD workflows (Python, Go, Rust, TypeScript, publishing, security) | All BrainXio repositories |
-| `actions/` | Composite setup actions for toolchain installation | Reusable workflows |
+| `.github/workflows/` | Internal automation (self-CI, cache-hygiene, branch-protection) | This repo only |
+| `.githooks/` | Shared git hooks (pre-commit standards guard) | All BrainXio repositories |
 | `defaults/` | Org-wide lint configs (.yamllint, .hadolint.yaml, .typos.toml, etc.) | All repositories |
 | `ISSUE_TEMPLATE/` | GitHub issue and PR templates | All repositories |
 | `profile/` | GitHub organization profile page | github.com/brainxio |
 
-## Using Reusable Workflows
+## Related Repositories
 
-Consumer repositories call workflows via `uses:` with a version tag:
+The reusable CI/CD infrastructure lives in dedicated repositories:
 
-```yaml
-jobs:
-  test:
-    uses: BrainXio/.github/workflows/ci-python.yml@v1
-    with:
-      python-version: "3.12"
-```
-
-**Always pin to `@v1`** — this floating tag points to the latest v1.x release and is updated after every patch release. Never use `@main` in production.
+| Repository | Purpose | Consumer Syntax |
+|---|---|---|
+| `brainxio/cicd` | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security) | `uses: brainxio/cicd/.github/workflows/...` |
+| `brainxio/actions` | Composite setup actions for toolchain installation | `uses: brainxio/actions/...` |
+| `brainxio/.githooks` | Shared git hooks extracted for independent versioning | `git config core.hooksPath .githooks` |
 
 ## Using Defaults
 
 Copy files from `defaults/` into your repository root. Do not symlink in production — symlinks break on fork, offline work, and raw URL access.
 
-## Consumer Workflow Reference
-
-See [workflows/CONSUMER.md](workflows/CONSUMER.md) for the complete list of workflows safe to call via `uses:` and their usage examples.
-
 ## Self-Only Workflows
 
-The following workflows in `.github/workflows/` are internal to this repo only and are **not** part of the public consumer contract:
+The following workflows in `.github/workflows/` are internal to this repo only:
 
 - `enforce-branch-protection.yml` — protects `main` on this repo
 - `cache-hygiene.yml` — monitors cache usage on this repo
-- `self-ci.yml` — validates this repo's own workflows and actions
+- `self-ci.yml` — validates this repo's own automation
 
-For the list of workflows that **are** safe to call from other repos, see [workflows/CONSUMER.md](workflows/CONSUMER.md).
+## Security Hardening
 
-## Updating the v1 Floating Tag
-
-After every `v1.0.x` release, a maintainer must manually update the floating `v1` tag:
-
-```bash
-git fetch origin
-git tag -fa v1 -m "v1 → v1.0.x"
-git push -f origin v1
-```
-
-This is deliberately manual — an automated force-push would be a security risk.
-
-## Cache Best Practices
-
-All composite actions use explicit `restore-keys` fallbacks. See [actions/cache-best-practices.md](actions/cache-best-practices.md) for the pattern.
-
-## Security Hardening for Reusable Workflows
-
-All workflows in this repository follow these principles:
+All automation in this organization follows these principles:
 
 - **Minimal permissions**: `permissions: contents: read` by default; elevated permissions granted only per-job.
 - **No `pull_request_target`**: Workflows do not use `pull_request_target` to avoid untrusted code execution.
