@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 # standards-guard pre-commit hook
-# Blocks manifesto content, phantom repo links, and philosophy in standards docs
+# Blocks manifesto content, phantom repo links, philosophy in standards docs, and secrets
 set -euo pipefail
+
+# --- Secret scanning ---
+if command -v gitleaks &>/dev/null; then
+  echo "Running gitleaks protect --staged..."
+  gitleaks protect --staged --verbose || {
+    echo "ERROR: gitleaks detected potential secrets in staged changes." >&2
+    echo "See .gitleaks.toml for allowlist configuration." >&2
+    exit 1
+  }
+fi
 
 FORBIDDEN_PATTERNS=(
   "local-first"
