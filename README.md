@@ -14,13 +14,12 @@ Organization templates, issue templates, lint defaults, and self-CI for the Brai
 
 ## Related Repositories
 
-The reusable CI/CD infrastructure lives in dedicated repositories:
-
 | Repository | Purpose | Consumer Syntax |
 |---|---|---|
-| `brainxio/cicd` | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security) | `uses: brainxio/cicd/.github/workflows/...` |
 | `brainxio/actions` | Composite setup actions for toolchain installation | `uses: brainxio/actions/...` |
-| `brainxio/.githooks` | Shared git hooks extracted for independent versioning | `git config core.hooksPath .githooks` |
+| `brainxio/cicd` | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security) | `uses: brainxio/cicd/.github/workflows/...` |
+| `brainxio/claude-cli` | Claude Code CLI extensions: hooks, quality gates, and utility commands | `uvx --from git+https://github.com/BrainXio/claude-cli <command>` |
+| `brainxio/claude-config` | Framework configuration for Claude Code: rules, agents, skills, and settings | Copy/symlink into `.claude/` |
 
 ## Using Defaults
 
