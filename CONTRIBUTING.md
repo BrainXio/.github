@@ -148,6 +148,32 @@ All PRs are squash-merged into `main`.
 
 ---
 
+## Version Pinning Policy
+
+### Third-Party Actions
+
+All third-party GitHub Actions (`uses:` references to repos outside `brainxio/` or `BrainXio/`) **must** be pinned to a full commit SHA with a trailing comment indicating the semantic version tag.
+
+**Correct:**
+
+```yaml
+- uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+```
+
+**Forbidden:**
+
+```yaml
+- uses: actions/checkout@v6
+- uses: actions/checkout@main
+- uses: actions/checkout@latest
+```
+
+### Internal Actions
+
+Reusable workflows and composite actions inside the `brainxio/` or `BrainXio/` org use a semver tag (e.g., `@v1`) so that security patches and bug fixes roll out to all consumers automatically without requiring a PR in every repo.
+
+---
+
 ## Reusable Workflows
 
 Consumer repos call workflows via `uses:` with a version tag. Pin to a tag (e.g., `@v1`) — never `main`.
