@@ -6,13 +6,13 @@ These files are copied into each disorder-family repository (`ocd`, future `adhd
 
 ## Files
 
-| File | Purpose | Enforcement |
-| ---- | ------- | ----------- |
-| `.yamllint` | YAML linting rules | Required |
-| `.hadolint.yaml` | Dockerfile linting rules | Required |
-| `.mdformat.toml` | Markdown formatting | Required |
-| `.prettierrc` | JavaScript/TypeScript/etc. formatting | Opt-in |
-| `.typos.toml` | Spell-checking ignore list | Required |
+| File             | Purpose                               | Enforcement |
+| ---------------- | ------------------------------------- | ----------- |
+| `.yamllint`      | YAML linting rules                    | Required    |
+| `.hadolint.yaml` | Dockerfile linting rules              | Required    |
+| `.mdformat.toml` | Markdown formatting                   | Required    |
+| `.prettierrc`    | JavaScript/TypeScript/etc. formatting | Opt-in      |
+| `.typos.toml`    | Spell-checking ignore list            | Required    |
 
 **`.prettierrc`** is opt-in. Consumer repos should copy it if they use Prettier, but it is not enforced. Other files are required and applied automatically by CI.
 

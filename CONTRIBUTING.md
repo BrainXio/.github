@@ -4,14 +4,14 @@
 
 ### Prerequisites
 
-| Tool | Version | Purpose |
-| --- | --- | --- |
-| `git` | any recent | Version control |
-| Node.js | 20+ | TypeScript tooling, GitHub Actions |
-| Python | 3.10+ | Scripts, CI utilities |
-| `uv` | latest | Python package manager |
-| Go | 1.22+ | CLI tooling |
-| Rust | 1.87+ | Low-level tooling |
+| Tool    | Version    | Purpose                            |
+| ------- | ---------- | ---------------------------------- |
+| `git`   | any recent | Version control                    |
+| Node.js | 20+        | TypeScript tooling, GitHub Actions |
+| Python  | 3.10+      | Scripts, CI utilities              |
+| `uv`    | latest     | Python package manager             |
+| Go      | 1.22+      | CLI tooling                        |
+| Rust    | 1.87+      | Low-level tooling                  |
 
 ### Clone
 
@@ -58,7 +58,7 @@ print('All action files valid')
 "
 ```
 
----
+______________________________________________________________________
 
 ## Making Changes
 
@@ -93,7 +93,7 @@ The workspace includes hooks that run automatically on `git commit`:
 
 If hooks fail, fix the reported issue and re-commit. Do not use `--no-verify`.
 
----
+______________________________________________________________________
 
 ## Testing
 
@@ -131,7 +131,7 @@ jobs:
       python-version: "3.12"
 ```
 
----
+______________________________________________________________________
 
 ## Pull Request Checklist
 
@@ -146,7 +146,7 @@ Before merging:
 
 All PRs are squash-merged into `main`.
 
----
+______________________________________________________________________
 
 ## Version Pinning Policy
 
@@ -172,7 +172,7 @@ All third-party GitHub Actions (`uses:` references to repos outside `brainxio/` 
 
 Reusable workflows and composite actions inside the `brainxio/` or `BrainXio/` org use a semver tag (e.g., `@v1`) so that security patches and bug fixes roll out to all consumers automatically without requiring a PR in every repo.
 
----
+______________________________________________________________________
 
 ## Reusable Workflows
 
@@ -219,7 +219,7 @@ jobs:
       days-before-close: 7
 ```
 
----
+______________________________________________________________________
 
 ## Signed Commits
 

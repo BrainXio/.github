@@ -2,10 +2,10 @@
 
 ## Supported Versions
 
-| Version | Support Status | Notes |
-|---------|---------------|-------|
-| v1.x   | Active support | Receive security patches |
-| v0.x   | End of life | No security updates; upgrade required |
+| Version | Support Status | Notes                                 |
+| ------- | -------------- | ------------------------------------- |
+| v1.x    | Active support | Receive security patches              |
+| v0.x    | End of life    | No security updates; upgrade required |
 
 ## Scope
 
@@ -30,6 +30,7 @@ Open a draft advisory at `https://github.com/BrainXio/<repo>/security/advisories
 Contact github@brainxio.org. Encrypt if possible (PGP key available on keyserver).
 
 **What to include:**
+
 - Affected repository and version or commit SHA
 - Description of the vulnerability
 - Steps to reproduce
@@ -40,24 +41,24 @@ Contact github@brainxio.org. Encrypt if possible (PGP key available on keyserver
 
 ## Response SLAs
 
-| Severity | Initial Response | Triage |
-|----------|-----------------|--------|
-| Critical | 24 hours        | 48 hours |
-| High     | 48 hours        | 5 business days |
-| Medium   | 5 business days | — |
-| Low      | 5 business days | — |
+| Severity | Initial Response | Triage          |
+| -------- | ---------------- | --------------- |
+| Critical | 24 hours         | 48 hours        |
+| High     | 48 hours         | 5 business days |
+| Medium   | 5 business days  | —               |
+| Low      | 5 business days  | —               |
 
 Severity is assessed by BrainXio based on CVSS scoring and blast radius.
 
 ## Coordinated Vulnerability Disclosure (CVD)
 
 1. Reporter submits via GitHub Security Advisory or email.
-2. BrainXio acknowledges within the SLA window.
-3. BrainXio reproduces and validates, requests CVE number if applicable.
-4. Fix is developed under embargo.
-5. Patch is released publicly with credit (if agreed).
-6. Public disclosure occurs **only after a fix is available**.
-7. Full public advisory published within **90 days** of initial report, regardless of patch status.
+1. BrainXio acknowledges within the SLA window.
+1. BrainXio reproduces and validates, requests CVE number if applicable.
+1. Fix is developed under embargo.
+1. Patch is released publicly with credit (if agreed).
+1. Public disclosure occurs **only after a fix is available**.
+1. Full public advisory published within **90 days** of initial report, regardless of patch status.
 
 ## Safe Harbor
 

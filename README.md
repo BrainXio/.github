@@ -4,22 +4,22 @@ Organization templates, issue templates, lint defaults, and self-CI for the Brai
 
 ## What This Repo Provides
 
-| Directory | Purpose | Used By |
-|---|---|---|
-| `.github/workflows/` | Internal automation (self-CI, cache-hygiene, branch-protection) | This repo only |
-| `.githooks/` | Shared git hooks (pre-commit standards guard) | All BrainXio repositories |
-| `defaults/` | Org-wide lint configs (.yamllint, .hadolint.yaml, .typos.toml, etc.) | All repositories |
-| `ISSUE_TEMPLATE/` | GitHub issue and PR templates | All repositories |
-| `profile/` | GitHub organization profile page | github.com/brainxio |
+| Directory            | Purpose                                                              | Used By                   |
+| -------------------- | -------------------------------------------------------------------- | ------------------------- |
+| `.github/workflows/` | Internal automation (self-CI, cache-hygiene, branch-protection)      | This repo only            |
+| `.githooks/`         | Shared git hooks (pre-commit standards guard)                        | All BrainXio repositories |
+| `defaults/`          | Org-wide lint configs (.yamllint, .hadolint.yaml, .typos.toml, etc.) | All repositories          |
+| `ISSUE_TEMPLATE/`    | GitHub issue and PR templates                                        | All repositories          |
+| `profile/`           | GitHub organization profile page                                     | github.com/brainxio       |
 
 ## Related Repositories
 
-| Repository | Purpose | Consumer Syntax |
-|---|---|---|
-| `brainxio/actions` | Composite setup actions for toolchain installation | `uses: brainxio/actions/...` |
-| `brainxio/cicd` | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security) | `uses: brainxio/cicd/.github/workflows/...` |
-| `brainxio/claude-cli` | Claude Code CLI extensions: hooks, quality gates, and utility commands | `uvx --from git+https://github.com/BrainXio/claude-cli <command>` |
-| `brainxio/claude-config` | Framework configuration for Claude Code: rules, agents, skills, and settings | Copy/symlink into `.claude/` |
+| Repository               | Purpose                                                                      | Consumer Syntax                                                   |
+| ------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `brainxio/actions`       | Composite setup actions for toolchain installation                           | `uses: brainxio/actions/...`                                      |
+| `brainxio/cicd`          | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security)   | `uses: brainxio/cicd/.github/workflows/...`                       |
+| `brainxio/claude-cli`    | Claude Code CLI extensions: hooks, quality gates, and utility commands       | `uvx --from git+https://github.com/BrainXio/claude-cli <command>` |
+| `brainxio/claude-config` | Framework configuration for Claude Code: rules, agents, skills, and settings | Copy/symlink into `.claude/`                                      |
 
 ## Using Defaults
 
