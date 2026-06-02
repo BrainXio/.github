@@ -4,18 +4,16 @@ BrainXio builds agent infrastructure and tooling.
 
 ## Repositories
 
-| Repository                                                 | Description                                                                  |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [.github](https://github.com/brainxio/.github)             | Organization profile, reusable workflows, issue templates, and org defaults  |
-| [actions](https://github.com/brainxio/actions)             | Composite setup actions for toolchain installation                           |
-| [cicd](https://github.com/brainxio/cicd)                   | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security)   |
-| [claude-cli](https://github.com/brainxio/claude-cli)       | Claude Code CLI extensions: hooks, quality gates, and utility commands       |
-| [claude-config](https://github.com/brainxio/claude-config) | Framework configuration for Claude Code: rules, agents, skills, and settings |
+| Repository    | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
+| .github       | Organization profile, reusable workflows, issue templates, and org defaults |
+| actions       | Composite setup actions for toolchain installation                         |
+| cicd          | Reusable CI workflows (Python, Go, Rust, TypeScript, publishing, security) |
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/brainxio/.github/blob/main/CONTRIBUTING.md) for guidelines.
+See `CONTRIBUTING.md` for guidelines.
 
 ## Security
 
-Report security issues via [SECURITY.md](https://github.com/brainxio/.github/blob/main/SECURITY.md).
+Report security issues via `SECURITY.md`.
